@@ -10,18 +10,18 @@ ObjLoader::~ObjLoader() {
 }
 
 void ObjLoader::loadOBJ(const std::string &filepath, 
-              std::vector<glm::vec3> &vertices, 
-              std::vector<glm::vec2> &uvs,
-              std::vector<glm::vec3> &normals,
+              std::vector<ft_glm::vec3> &vertices, 
+              std::vector<ft_glm::vec2> &uvs,
+              std::vector<ft_glm::vec3> &normals,
               ft_glm::vec3 &maxs,
               ft_glm::vec3 &mins) const {
 
   // [!][+] parse les caract spe + fini en .obj
 
   std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-  std::vector<glm::vec3> temp_vertices; 
-  std::vector<glm::vec2> temp_uvs;
-  std::vector<glm::vec3> temp_normals;
+  std::vector<ft_glm::vec3> temp_vertices; 
+  std::vector<ft_glm::vec2> temp_uvs;
+  std::vector<ft_glm::vec3> temp_normals;
 
   // float minX, minY, minZ, maxX, maxY, maxZ;
   bool isFirstVertex = true;
@@ -70,13 +70,13 @@ void ObjLoader::loadOBJ(const std::string &filepath,
         if (vertex.z > maxs.z)
           maxs.z = vertex.z;
       }
-      temp_vertices.push_back(glm::vec3(vertex.x, vertex.y, vertex.z));
+      temp_vertices.push_back(ft_glm::vec3(vertex.x, vertex.y, vertex.z));
     } else if (header == "vt") {
-      glm::vec2 uv;
+      ft_glm::vec2 uv;
       iss >> uv.x >> uv.y;
       temp_uvs.push_back(uv);
     } else if (header == "vn") {
-      glm::vec3 normal;
+      ft_glm::vec3 normal;
       iss >> normal.x >> normal.y >> normal.z;
       temp_normals.push_back(normal);
     } else if (header == "f") {
@@ -103,22 +103,19 @@ void ObjLoader::loadOBJ(const std::string &filepath,
 
         // Get the indices of its attributes
         unsigned int vertexIndex = vertexIndices[i];
-        glm::vec3 vertex = temp_vertices[vertexIndex - 1];
+        ft_glm::vec3 vertex = temp_vertices[vertexIndex - 1];
         vertices.push_back(vertex);
         if (fSlotSize < 2) { continue; }
 
         unsigned int uvIndex = uvIndices[i];
-        glm::vec2 uv = temp_uvs[uvIndex - 1];
+        ft_glm::vec2 uv = temp_uvs[uvIndex - 1];
         uvs.push_back(uv);
         if (fSlotSize < 3) { continue; }
 
         unsigned int normalIndex = normalIndices[i];
-        glm::vec3 normal = temp_normals[normalIndex - 1];
+        ft_glm::vec3 normal = temp_normals[normalIndex - 1];
         normals.push_back(normal);
     }
-
-  // _checkVertices(vertices, uvs, normals); // [!] Debug only
-
 }
 
 // To get which format is used for f line : v or v/vt or v/vt/vn
@@ -237,7 +234,7 @@ std::vector<std::string> ObjLoader::_split(const std::string &str, char delimite
     return tokens;
 }
 
-void ObjLoader::_checkVertices(const std::vector<glm::vec3> &vertices, const std::vector<glm::vec2> &uvs, const std::vector<glm::vec3> &normals) const {
+void ObjLoader::_checkVertices(const std::vector<ft_glm::vec3> &vertices, const std::vector<ft_glm::vec2> &uvs, const std::vector<ft_glm::vec3> &normals) const {
   std::cout << "--- Vertices (" << vertices.size() << ")" << std::endl;
   for (const auto &vertex : vertices) {
       std::cout << "  " << vertex.x << ", " << vertex.y << ", " << vertex.z << std::endl;

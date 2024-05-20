@@ -11,7 +11,6 @@ set(WINDOW_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Window")
 set(SHADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Shader")
 set(VERTEX_ARRAY_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/VertexArray")
 set(VERTEX_BUFFER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/VertexBuffer")
-set(FILE_LOADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/loader")
 set(CAMERA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Camera/")
 set(OBJLOADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/ObjLoader/")
 set(BMPLOADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/BMPLoader/")
@@ -30,7 +29,6 @@ add_executable(
   dependencies/glad/glad.c
   dependencies/tools/errorHandling.h
   dependencies/tools/errorHandling.cpp
-  dependencies/loader/texture.cpp
  
   src/scop.cpp
   src/Window/Window.cpp
@@ -55,7 +53,6 @@ include_directories(
   ${SHADER_INCLUDE_DIR}
   ${VERTEX_ARRAY_INCLUDE_DIR}
   ${VERTEX_BUFFER_INCLUDE_DIR}
-  ${FILE_LOADER_INCLUDE_DIR}
   ${CAMERA_INCLUDE_DIR}
   ${OBJLOADER_INCLUDE_DIR}
   ${BMPLOADER_INCLUDE_DIR}

@@ -6,14 +6,11 @@
 #include <sstream>
 #include <vector>
 
-#include <cstring> // for extern version
-
 #include "glad.h"
 #include <GLFW/glfw3.h>
 #include "errorHandling.h"
 
-#include "ft_glm.h"
-#include <glm/glm.hpp> // [!] check if all these header are needed + replace glm !
+#include <ft_glm.h>
 
 class ObjLoader
 {
@@ -42,9 +39,9 @@ class ObjLoader
     };
 
     void loadOBJ(const std::string &filepath, 
-         std::vector<glm::vec3> &vertices, 
-         std::vector<glm::vec2> &uvs,
-         std::vector<glm::vec3> &normals,
+         std::vector<ft_glm::vec3> &vertices, 
+         std::vector<ft_glm::vec2> &uvs,
+         std::vector<ft_glm::vec3> &normals,
               ft_glm::vec3 &maxs,
               ft_glm::vec3 &mins) const;
 
@@ -52,7 +49,7 @@ class ObjLoader
 
 
     std::vector<std::string> _split(const std::string &str, char delimiter) const;
-    void _checkVertices(const std::vector<glm::vec3> &vertices, const std::vector<glm::vec2> &uvs, const std::vector<glm::vec3> &normals) const;
+    void _checkVertices(const std::vector<ft_glm::vec3> &vertices, const std::vector<ft_glm::vec2> &uvs, const std::vector<ft_glm::vec3> &normals) const;
     
     void _parseFLineFromTriangle(unsigned int size, const std::string &line, std::vector<unsigned int> &vertexIndices, 
 std::vector<unsigned int> &uvIndices, std::vector<unsigned int> &normalIndices) const;

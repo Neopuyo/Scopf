@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #include "errorHandling.h"
 
-#include <glm/glm.hpp>
+#include <ft_glm.h>
 
 struct ShaderProgramSource {
   std::string vertex;
@@ -36,7 +36,7 @@ class Shader {
     void setUniform1i(const std::string &name, int value);
     void setUniform1f(const std::string &name, float value);
     void setUniform4f(const std::string &name, float v0, float v1, float v2, float v3);
-    void setUniformMat4f(const std::string &name, const glm::mat4 &matrix);
+    void setUniformMat4f(const std::string &name, const ft_glm::mat4 &matrix);
 
   private:
     // [!] const or not? (check it for all this private func)

@@ -6,22 +6,16 @@
 #include "glad.h"
 #include <GLFW/glfw3.h>
 
+#include <ft_glm.h>
+#include <errorHandling.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform.hpp> // rotation here
-
-#include "errorHandling.h"
 #include "Window.h"
 #include "Camera.h"
-#include "texture.hpp"
-
 #include "Shader.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "ObjLoader.h"
 #include "BMPLoader.h"
-#include "ft_glm.h"
 
 
 
@@ -33,9 +27,9 @@ int main()
 
     // Load Obj file
   ObjLoader objLoader = ObjLoader();
-  std::vector<glm::vec3> vertices;
-  std::vector<glm::vec2> uvs;
-  std::vector<glm::vec3> normals; // will not be used yet
+  std::vector<ft_glm::vec3> vertices;
+  std::vector<ft_glm::vec2> uvs;
+  std::vector<ft_glm::vec3> normals; // will not be used yet
 
   const std::string objFilePath = "../res/obj/teapot.obj";
   // const std::string textureFilePath = "../res/textures/unikitty.bmp";
@@ -62,20 +56,20 @@ int main()
   // ---------------------
   // Projection matrix: 45° Field of View, 4:3 ratio, display range: 0.1 unit <-> 100 units
 
-  glm::vec3 center = glm::vec3((maxs.x + mins.x) / 2, (maxs.y + mins.y) / 2, (maxs.z + mins.z) / 2);
+  ft_glm::vec3 center = ft_glm::vec3((maxs.x + mins.x) / 2, (maxs.y + mins.y) / 2, (maxs.z + mins.z) / 2);
    std::cout << "Center : " << center.x << ", " << center.y << ", " << center.z << std::endl;
   // glm::mat4 transToCenterMatrix = glm::translate(glm::mat4(), glm::vec3(-center.x, -center.y, -center.z));
   // glm::mat4 myScalingMatrix = glm::scale(glm::mat4(1), glm::vec3(2,2,2));
 
-   glm::mat4 translateTestMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-center.x, -center.y, -center.z));
+   ft_glm::mat4 translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_glm::vec3(-center.x, -center.y, -center.z));
 
 
 
 
-  glm::mat4 projectionMatrix = camera.getProjectionMatrix();
-  glm::mat4 viewMatrix = camera.getViewMatrix();
-  glm::mat4 modelMatrix  = translateTestMatrix * glm::mat4(1.0f);
-  glm::mat4 mvp = projectionMatrix  * viewMatrix * modelMatrix;
+  ft_glm::mat4 projectionMatrix = camera.getProjectionMatrix();
+  ft_glm::mat4 viewMatrix = camera.getViewMatrix();
+  ft_glm::mat4 modelMatrix  = translateTestMatrix * ft_glm::mat4(1.0f);
+  ft_glm::mat4 mvp = projectionMatrix  * viewMatrix * modelMatrix;
 
 
   // GLFW : input handler
@@ -96,10 +90,10 @@ int main()
   if (uvs.size() == 0) {
     for (auto vertex : vertices) {
       // Planar projection - texture
-      glm::vec4 vertexPos = glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
-      glm::vec4 clipPos = projectionMatrix * viewMatrix * vertexPos;
-      glm::vec3 texCoords = glm::vec3(clipPos.x / clipPos.w, clipPos.y / clipPos.w, 0.0f);
-      uvs.push_back(texCoords);
+      ft_glm::vec4 vertexPos = ft_glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+      ft_glm::vec4 clipPos = projectionMatrix * viewMatrix * vertexPos;
+      ft_glm::vec3 texCoords = ft_glm::vec3(clipPos.x / clipPos.w, clipPos.y / clipPos.w, 0.0f);
+      uvs.push_back(ft_glm::vec2(texCoords.x, texCoords.y));
     }
   }
 
@@ -112,15 +106,15 @@ int main()
   Shader shader = Shader("../res/shaders/basic_shader.glsl");
   shader.bind();
 
-  VertexBuffer vertexBuffer = VertexBuffer(&vertices[0], vertices.size() * sizeof(glm::vec3));
+  VertexBuffer vertexBuffer = VertexBuffer(&vertices[0], vertices.size() * sizeof(ft_glm::vec3));
   vertexBuffer.bind();
 
-  VertexBuffer uvBuffer = VertexBuffer(&uvs[0], uvs.size() * sizeof(glm::vec2));
+  VertexBuffer uvBuffer = VertexBuffer(&uvs[0], uvs.size() * sizeof(ft_glm::vec2));
   uvBuffer.bind();
 
-  std::vector<glm::vec3> colors;
+  std::vector<ft_glm::vec3> colors;
 
-  std::vector<glm::vec3> colorPalette = {
+  std::vector<ft_glm::vec3> colorPalette = {
     // glm::vec3(0.997f,  0.513f,  0.064f),
     // glm::vec3(0.945f,  0.719f,  0.592f),
     // glm::vec3(0.543f,  0.021f,  0.978f),
@@ -135,21 +129,21 @@ int main()
     // glm::vec3(0.517f,  0.713f,  0.338f),
     // glm::vec3(0.820f,  0.883f,  0.371f),
 
-    glm::vec3(0.1f,  0.1f,  0.1f),
-    glm::vec3(0.1f,  0.1f,  0.1f),
-    glm::vec3(0.1f,  0.1f,  0.1f),
+    ft_glm::vec3(0.1f,  0.1f,  0.1f),
+    ft_glm::vec3(0.1f,  0.1f,  0.1f),
+    ft_glm::vec3(0.1f,  0.1f,  0.1f),
 
-    glm::vec3(0.2f,  0.2f,  0.2f),
-    glm::vec3(0.2f,  0.2f,  0.2f),
-    glm::vec3(0.2f,  0.2f,  0.2f),
+    ft_glm::vec3(0.2f,  0.2f,  0.2f),
+    ft_glm::vec3(0.2f,  0.2f,  0.2f),
+    ft_glm::vec3(0.2f,  0.2f,  0.2f),
 
-    glm::vec3(0.3f,  0.3f,  0.3f),
-    glm::vec3(0.3f,  0.3f,  0.3f),
-    glm::vec3(0.3f,  0.3f,  0.3f),
+    ft_glm::vec3(0.3f,  0.3f,  0.3f),
+    ft_glm::vec3(0.3f,  0.3f,  0.3f),
+    ft_glm::vec3(0.3f,  0.3f,  0.3f),
 
-    glm::vec3(0.4f,  0.4f,  0.4f),
-    glm::vec3(0.4f,  0.4f,  0.4f),
-    glm::vec3(0.4f,  0.4f,  0.4f),
+    ft_glm::vec3(0.4f,  0.4f,  0.4f),
+    ft_glm::vec3(0.4f,  0.4f,  0.4f),
+    ft_glm::vec3(0.4f,  0.4f,  0.4f),
   };
 
 
@@ -161,7 +155,7 @@ int main()
       index = 0;
   }
 
-  VertexBuffer colorBuffer = VertexBuffer(&colors[0], colors.size() * sizeof(glm::vec3));
+  VertexBuffer colorBuffer = VertexBuffer(&colors[0], colors.size() * sizeof(ft_glm::vec3));
   colorBuffer.bind();
 
 

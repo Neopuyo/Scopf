@@ -4,9 +4,11 @@
 #include "../glad/glad.h"
 #include <GLFW/glfw3.h>
 
-// Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <ft_glm.h>
+
+// Include GLM [!] delet it when ft is ok
+// #include <glm/glm.hpp>
+// #include <glm/gtc/matrix_transform.hpp>
 
 #include "errorHandling.h"
 #include "Window.h"
@@ -20,11 +22,11 @@ class Camera {
   private:
     GLFWwindow *m_window;
     ViewMode m_mode;
-    glm::mat4 m_projectionMatrix;
-    glm::mat4 m_viewMatrix;
+    ft_glm::mat4 m_projectionMatrix;
+    ft_glm::mat4 m_viewMatrix;
     
 
-    glm::vec3 m_position = glm::vec3( 0, 0, 5 ); // Initial position : on +Z
+    ft_glm::vec3 m_position = ft_glm::vec3( 0, 0, 5 ); // Initial position : on +Z
     
     float m_horizontalAngle = 3.14f; // Initial horizontal angle : toward -Z
     float m_verticalAngle = 0.0f;    // Initial vertical angle : none
@@ -41,8 +43,8 @@ class Camera {
     ~Camera();
 
     ViewMode         getViewMode() const { return m_mode; }
-    inline glm::mat4 getViewMatrix() const { return m_viewMatrix; }
-    inline glm::mat4 getProjectionMatrix() const { return m_projectionMatrix; }
+    inline ft_glm::mat4 getViewMatrix() const { return m_viewMatrix; }
+    inline ft_glm::mat4 getProjectionMatrix() const { return m_projectionMatrix; }
 
     void computeMatricesFromInputs();
     void autoCamera(const float speed = 1.0f);
