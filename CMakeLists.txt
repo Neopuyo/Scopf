@@ -15,6 +15,7 @@ set(CAMERA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/Camera/")
 set(OBJLOADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/ObjLoader/")
 set(BMPLOADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/BMPLoader/")
 set(FT_GLM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/ft_glm/")
+set(TEST_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 
 # compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
@@ -29,6 +30,8 @@ add_executable(
   dependencies/glad/glad.c
   dependencies/tools/errorHandling.h
   dependencies/tools/errorHandling.cpp
+
+  tests/tests_ft_glm.cpp
  
   src/scop.cpp
   src/Window/Window.cpp
@@ -57,6 +60,7 @@ include_directories(
   ${OBJLOADER_INCLUDE_DIR}
   ${BMPLOADER_INCLUDE_DIR}
   ${FT_GLM_INCLUDE_DIR}
+  ${TEST_INCLUDE_DIR}
 )
 
 find_package(OpenGL REQUIRED)

@@ -60,6 +60,7 @@ namespace ft_glm {
   };
 
   vec4 operator*(const vec4 &v1, const vec4 &v2);
+  bool operator==(const ft_glm::vec4 &lhs, const ft_glm::vec4 &rhs);
 
 
  /* ------------------------- 4x4 Matrices -------------------- */
@@ -75,6 +76,10 @@ namespace ft_glm {
 
     mat4() {};
     mat4(float f);
+    mat4(float m00, float m01, float m02, float m03,
+         float m10, float m11, float m12, float m13,
+         float m20, float m21, float m22, float m23,
+         float m30, float m31, float m32, float m33);
 
     mat4(const mat4& other);
     mat4 &operator=(const mat4 &other);
@@ -92,3 +97,6 @@ namespace ft_glm {
   mat4 lookAt(const vec3 &position, const vec3 &target, const vec3 &up);
 
 };
+
+// Out of namespace ft_glm
+std::ostream &operator<<(std::ostream& os, const ft_glm::vec4 &vec);

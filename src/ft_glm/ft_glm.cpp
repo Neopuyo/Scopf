@@ -93,6 +93,15 @@ vec4 &ft_glm::vec4::operator=(const vec4 &other) {
   return *this;
 }
 
+bool ft_glm::operator==(const ft_glm::vec4 &lhs, const ft_glm::vec4 &rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+}
+
+std::ostream& operator<<(std::ostream& os, const ft_glm::vec4& vec) {
+    os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
+    return os;
+}
+
 
 
 // ------------- Matrices
@@ -101,6 +110,28 @@ ft_glm::mat4::mat4(float f) {
   data[0][0] = f;
   data[1][1] = f;
   data[2][2] = f;
+}
+
+ft_glm::mat4::mat4(float m00, float m01, float m02, float m03,
+                   float m10, float m11, float m12, float m13,
+                   float m20, float m21, float m22, float m23,
+                   float m30, float m31, float m32, float m33) {
+    data[0][0] = m00;
+    data[0][1] = m01;
+    data[0][2] = m02;
+    data[0][3] = m03;
+    data[1][0] = m10;
+    data[1][1] = m11;
+    data[1][2] = m12;
+    data[1][3] = m13;
+    data[2][0] = m20;
+    data[2][1] = m21;
+    data[2][2] = m22;
+    data[2][3] = m23;
+    data[3][0] = m30;
+    data[3][1] = m31;
+    data[3][2] = m32;
+    data[3][3] = m33;
 }
 
 ft_glm::mat4::mat4(const mat4 &other) {
@@ -141,10 +172,10 @@ mat4 &ft_glm::mat4::operator=(const mat4 &other) {
 vec4 ft_glm::operator*(const mat4 &m, const vec4 &v) {
   vec4 vertex = vec4();
 
-  vertex.x = (m.data[0][0] * v.x) + (m.data[0][1] * v.y) + (m.data[0][2] * v.z) + (m.data[0][3] * v.w);
-  vertex.y = (m.data[1][0] * v.x) + (m.data[1][1] * v.y) + (m.data[1][2] * v.z) + (m.data[1][3] * v.w);
-  vertex.z = (m.data[2][0] * v.x) + (m.data[2][1] * v.y) + (m.data[2][2] * v.z) + (m.data[2][3] * v.w);
-  vertex.w = (m.data[3][0] * v.x) + (m.data[3][1] * v.y) + (m.data[3][2] * v.z) + (m.data[3][3] * v.w);
+  vertex.x = (m[0][0] * v.x) + (m[0][1] * v.y) + (m[0][2] * v.z) + (m[0][3] * v.w);
+  vertex.y = (m[1][0] * v.x) + (m[1][1] * v.y) + (m[1][2] * v.z) + (m[1][3] * v.w);
+  vertex.z = (m[2][0] * v.x) + (m[2][1] * v.y) + (m[2][2] * v.z) + (m[2][3] * v.w);
+  vertex.w = (m[3][0] * v.x) + (m[3][1] * v.y) + (m[3][2] * v.z) + (m[3][3] * v.w);
 
   return vertex;
 }
@@ -156,7 +187,7 @@ mat4 ft_glm::operator*(const mat4 &m1, const mat4 &m2) {
     for (int j = 0; j < 4; j++) {
       mProduct.data[i][j] = 0;
       for (int k = 0; k < 4; k++) {
-        mProduct.data[i][j] += m1.data[i][k] * m2.data[k][j];
+        mProduct[i][j] += m1[i][k] * m2[k][j];
       }
     }
   }
@@ -180,13 +211,15 @@ void ft_glm::mat4::show(const std::string &name) {
 mat4 ft_glm::translate(const mat4 &m, const vec3 &v) {
   mat4 translationMatrice = m;
 
-  translationMatrice.data[0][3] += v.x;
-  translationMatrice.data[1][3] += v.y;
-  translationMatrice.data[2][3] += v.z;
+  translationMatrice[0][3] += v.x;
+  translationMatrice[1][3] += v.y;
+  translationMatrice[2][3] += v.z;
 
   return translationMatrice;
 }
 
+
+// https://github.com/g-truc/glm/blob/0.9.5/glm/gtc/matrix_transform.inl#L208
  mat4 ft_glm::perspective(float fovRadians, float ratio, float near, float far) {
   if (far == near || ratio == 0.0f) {
     std::cout << "Error inputs perspective" << std::endl;
