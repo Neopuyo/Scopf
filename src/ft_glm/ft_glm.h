@@ -1,5 +1,7 @@
 #pragma once 
 
+#include <iostream>
+#include <iomanip>
 #include <cmath>
 
 namespace ft_glm {
@@ -60,27 +62,26 @@ namespace ft_glm {
   vec4 operator*(const vec4 &v1, const vec4 &v2);
 
 
- /* ------------------------- 4x4 Matrices
-  * v1.x   v2.x   v3.x   v4.x
-  *
-  * v1.y   v2.y   v3.y   v4.y
-  *
-  * v1.z   v2.z   v3.z   v4.z
-  *
-  * v1.w   v2.w   v3.w   v4.w
- */
+ /* ------------------------- 4x4 Matrices -------------------- */
   struct mat4 {
-    vec4 v1;
-    vec4 v2;
-    vec4 v3;
-    vec4 v4;
 
-    mat4() : v1(vec4(1.0f, 0.0f, 0.0f, 0.0f)), v2(vec4(0.0f, 1.0f, 0.0f, 0.0f)), v3(vec4(0.0f, 0.0f, 1.0f, 0.0f)), v4(vec4(0.0f, 0.0f, 0.0f, 1.0f)) {}
-    mat4(float f) : v1(vec4(f, 0.0f, 0.0f, 0.0f)), v2(vec4(0.0f, f, 0.0f, 0.0f)), v3(vec4(0.0f, 0.0f, f, 0.0f)), v4(vec4(0.0f, 0.0f, 0.0f, f)) {}
-    mat4(vec4 v1, vec4 v2, vec4 v3, vec4 v4) : v1(v1), v2(v2), v3(v3), v4(v4) {}
+
+    float data[4][4] = {
+      {1.0f, 0.0f, 0.0f, 0.0f}, // column 1
+      {0.0f, 1.0f, 0.0f, 0.0f}, // column 2
+      {0.0f, 0.0f, 1.0f, 0.0f}, // column 3
+      {0.0f, 0.0f, 0.0f, 1.0f}  // column 4
+    };
+
+    mat4() {};
+    mat4(float f);
 
     mat4(const mat4& other);
     mat4 &operator=(const mat4 &other);
+
+    float *operator[](int index);
+    const float* operator[](int index) const;
+    void show(const std::string &name);
   };
 
   vec4 operator*(const mat4 &m, const vec4 &v);

@@ -24,14 +24,13 @@ int main()
   Window window = Window(WIN_WIDTH, WIN_HEIGHT, "Tutorial 08");
   Camera camera = Camera(window.getWindow());
 
-
-    // Load Obj file
+  // Load Obj file
   ObjLoader objLoader = ObjLoader();
   std::vector<ft_glm::vec3> vertices;
   std::vector<ft_glm::vec2> uvs;
   std::vector<ft_glm::vec3> normals; // will not be used yet
 
-  const std::string objFilePath = "../res/obj/teapot.obj";
+  const std::string objFilePath = "../res/obj/cube.obj";
   // const std::string textureFilePath = "../res/textures/unikitty.bmp";
   const std::string textureFilePath = "../res/textures/poney.bmp";
 
@@ -56,10 +55,8 @@ int main()
   // ---------------------
   // Projection matrix: 45° Field of View, 4:3 ratio, display range: 0.1 unit <-> 100 units
 
-  ft_glm::vec3 center = ft_glm::vec3((maxs.x + mins.x) / 2, (maxs.y + mins.y) / 2, (maxs.z + mins.z) / 2);
+  ft_glm::vec3 center = ft_glm::vec3((maxs.x + mins.x) * 0.5f, (maxs.y + mins.y) * 0.5f, (maxs.z + mins.z) * 0.5f);
    std::cout << "Center : " << center.x << ", " << center.y << ", " << center.z << std::endl;
-  // glm::mat4 transToCenterMatrix = glm::translate(glm::mat4(), glm::vec3(-center.x, -center.y, -center.z));
-  // glm::mat4 myScalingMatrix = glm::scale(glm::mat4(1), glm::vec3(2,2,2));
 
    ft_glm::mat4 translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_glm::vec3(-center.x, -center.y, -center.z));
 
@@ -67,9 +64,13 @@ int main()
 
 
   ft_glm::mat4 projectionMatrix = camera.getProjectionMatrix();
+  projectionMatrix.show("projectionMatrix"); // [!] DEBUG
   ft_glm::mat4 viewMatrix = camera.getViewMatrix();
-  ft_glm::mat4 modelMatrix  = translateTestMatrix * ft_glm::mat4(1.0f);
+  viewMatrix.show("viewMatrix"); // [!] DEBUG
+  ft_glm::mat4 modelMatrix  =  translateTestMatrix * ft_glm::mat4(1.0f);
+  modelMatrix.show("modelMatrix"); // [!] DEBUG
   ft_glm::mat4 mvp = projectionMatrix  * viewMatrix * modelMatrix;
+  mvp.show("mvp"); // [!] DEBUG
 
 
   // GLFW : input handler

@@ -37,7 +37,7 @@ void Shader::setUniform4f(const std::string &name, float v0, float v1, float v2,
 
 void Shader::setUniformMat4f(const std::string &name, const ft_glm::mat4 &matrix) {
   // [+][!] subscript ??
-  LOGCHECK(glUniformMatrix4fv(_getUniformLocation(name), 1, GL_FALSE, &(matrix.v1.x))); // glm is already openGL specifiq, can use GL_FALSE
+  LOGCHECK(glUniformMatrix4fv(_getUniformLocation(name), 1, GL_FALSE, &matrix[0][0])); // glm is already openGL specifiq, can use GL_FALSE
 }
 
 

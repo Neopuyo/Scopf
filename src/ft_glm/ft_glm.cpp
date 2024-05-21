@@ -31,11 +31,11 @@ vec3 &ft_glm::vec3::operator-=(const vec3 &v) {
 
 
 vec3 ft_glm::operator+(const vec3 &v1, const vec3 &v2) {
-  return vec3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+  return vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
 
 vec3 ft_glm::operator-(const vec3 &v1, const vec3 &v2) {
-  return vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+  return vec3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
 vec3 ft_glm::operator*(float s, const vec3 &v) {
@@ -53,21 +53,21 @@ vec3 ft_glm::operator*(const vec3& v1, const vec3& v2) {
 vec3 ft_glm::cross(const vec3 &v1, const vec3 &v2) {
   vec3 crossProduct;
 
-  crossProduct.x = (v1.y * v2.z) - (v1.z - v2.y);
-  crossProduct.y = (v1.z * v2.x) - (v1.x - v2.z);
-  crossProduct.y = (v1.x * v2.y) - (v1.y - v2.x);
+  crossProduct.x = (v1.y * v2.z) - (v1.z * v2.y);
+  crossProduct.y = (v1.z * v2.x) - (v1.x * v2.z);
+  crossProduct.y = (v1.x * v2.y) - (v1.y * v2.x);
 
   return crossProduct;
 }
 
-
+// aka dot product
 float ft_glm::scalar(const vec3 &v1, const vec3 &v2) {
-    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
 vec3 ft_glm::normalize(const vec3 &v) {
-    float length = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-    return vec3(v.x / length, v.y / length, v.z / length);
+    float invLength = 1 / sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+    return vec3(v.x * invLength, v.y * invLength, v.z * invLength);
 }
 
 
@@ -84,103 +84,146 @@ ft_glm::vec4::vec4(const vec4 &other) {
 }
 
 vec4 &ft_glm::vec4::operator=(const vec4 &other) {
-  x = other.x;
-  y = other.y;
-  z = other.z;
-  w = other.w;
+  if (this != &other) {
+    x = other.x;
+    y = other.y;
+    z = other.z;
+    w = other.w;
+  }
   return *this;
 }
 
 
 
 // ------------- Matrices
+
+ft_glm::mat4::mat4(float f) {
+  data[0][0] = f;
+  data[1][1] = f;
+  data[2][2] = f;
+}
+
 ft_glm::mat4::mat4(const mat4 &other) {
-  v1 = other.v1;
-  v2 = other.v2;
-  v3 = other.v3;
-  v4 = other.v4;
+ for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+        data[i][j] = other.data[i][j];
+    }
+  }
+}
+
+float *ft_glm::mat4::operator[](int index) {
+    if (index < 0 || index >= 4) {
+        static float invalid_value = 0.0f;
+        return &invalid_value;
+    }
+    return data[index];
+}
+
+const float *ft_glm::mat4::operator[](int index) const {
+  if (index < 0 || index >= 4) {
+    static float invalid_value = 0.0f;
+      return &invalid_value;
+  }
+    return data[index];
 }
 
 mat4 &ft_glm::mat4::operator=(const mat4 &other) {
-  v1 = other.v1;
-  v2 = other.v2;
-  v3 = other.v3;
-  v4 = other.v4;
+  if (this != &other) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            data[i][j] = other.data[i][j];
+        }
+    }
+  }
   return *this;
 }
 
 vec4 ft_glm::operator*(const mat4 &m, const vec4 &v) {
   vec4 vertex = vec4();
 
-  vertex.x = (m.v1.x * v.x) + (m.v2.x * v.y) + (m.v3.x * v.z) + (m.v4.x * v.w);
-  vertex.y = (m.v1.y * v.x) + (m.v2.y * v.y) + (m.v3.y * v.z) + (m.v4.y * v.w);
-  vertex.y = (m.v1.z * v.x) + (m.v2.z * v.y) + (m.v3.z * v.z) + (m.v4.z * v.w);
-  vertex.y = (m.v1.w * v.x) + (m.v2.w * v.y) + (m.v3.w * v.z) + (m.v4.w * v.w);
+  vertex.x = (m.data[0][0] * v.x) + (m.data[0][1] * v.y) + (m.data[0][2] * v.z) + (m.data[0][3] * v.w);
+  vertex.y = (m.data[1][0] * v.x) + (m.data[1][1] * v.y) + (m.data[1][2] * v.z) + (m.data[1][3] * v.w);
+  vertex.z = (m.data[2][0] * v.x) + (m.data[2][1] * v.y) + (m.data[2][2] * v.z) + (m.data[2][3] * v.w);
+  vertex.w = (m.data[3][0] * v.x) + (m.data[3][1] * v.y) + (m.data[3][2] * v.z) + (m.data[3][3] * v.w);
 
   return vertex;
 }
 
 mat4 ft_glm::operator*(const mat4 &m1, const mat4 &m2) {
-   mat4 mProduct;
+  mat4 mProduct;
 
-  mProduct.v1.x = m1.v1.x * m2.v1.x + m1.v2.x * m2.v1.y + m1.v3.x * m2.v1.z + m1.v4.x * m2.v1.w;
-  mProduct.v1.y = m1.v1.y * m2.v1.x + m1.v2.y * m2.v1.y + m1.v3.y * m2.v1.z + m1.v4.y * m2.v1.w;
-  mProduct.v1.z = m1.v1.z * m2.v1.x + m1.v2.z * m2.v1.y + m1.v3.z * m2.v1.z + m1.v4.z * m2.v1.w;
-  mProduct.v1.w = m1.v1.w * m2.v1.x + m1.v2.w * m2.v1.y + m1.v3.w * m2.v1.z + m1.v4.w * m2.v1.w;
-
-  mProduct.v2.x = m1.v1.x * m2.v2.x + m1.v2.x * m2.v2.y + m1.v3.x * m2.v2.z + m1.v4.x * m2.v2.w;
-  mProduct.v2.y = m1.v1.y * m2.v2.x + m1.v2.y * m2.v2.y + m1.v3.y * m2.v2.z + m1.v4.y * m2.v2.w;
-  mProduct.v2.z = m1.v1.z * m2.v2.x + m1.v2.z * m2.v2.y + m1.v3.z * m2.v2.z + m1.v4.z * m2.v2.w;
-  mProduct.v2.w = m1.v1.w * m2.v2.x + m1.v2.w * m2.v2.y + m1.v3.w * m2.v2.z + m1.v4.w * m2.v2.w;
-
-  mProduct.v3.x = m1.v1.x * m2.v3.x + m1.v2.x * m2.v3.y + m1.v3.x * m2.v3.z + m1.v4.x * m2.v3.w;
-  mProduct.v3.y = m1.v1.y * m2.v3.x + m1.v2.y * m2.v3.y + m1.v3.y * m2.v3.z + m1.v4.y * m2.v3.w;
-  mProduct.v3.z = m1.v1.z * m2.v3.x + m1.v2.z * m2.v3.y + m1.v3.z * m2.v3.z + m1.v4.z * m2.v3.w;
-  mProduct.v3.w = m1.v1.w * m2.v3.x + m1.v2.w * m2.v3.y + m1.v3.w * m2.v3.z + m1.v4.w * m2.v3.w;
-
-  mProduct.v4.x = m1.v1.x * m2.v4.x + m1.v2.x * m2.v4.y + m1.v3.x * m2.v4.z + m1.v4.x * m2.v4.w;
-  mProduct.v4.y = m1.v1.y * m2.v4.x + m1.v2.y * m2.v4.y + m1.v3.y * m2.v4.z + m1.v4.y * m2.v4.w;
-  mProduct.v4.z = m1.v1.z * m2.v4.x + m1.v2.z * m2.v4.y + m1.v3.z * m2.v4.z + m1.v4.z * m2.v4.w;
-  mProduct.v4.w = m1.v1.w * m2.v4.x + m1.v2.w * m2.v4.y + m1.v3.w * m2.v4.z + m1.v4.w * m2.v4.w;
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 4; j++) {
+      mProduct.data[i][j] = 0;
+      for (int k = 0; k < 4; k++) {
+        mProduct.data[i][j] += m1.data[i][k] * m2.data[k][j];
+      }
+    }
+  }
 
   return mProduct;
+}
+
+void ft_glm::mat4::show(const std::string &name) {
+  std::cout << "[------ "<< name<< " ------]" << std::endl;
+  for (int i = 0; i < 4; i++) {
+    std::cout << "  ";
+    for (int j = 0; j < 4; j++) {
+      std::cout << std::fixed << std::setprecision(2) << (data[i][j] >= 0 ? " " : "") << data[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+  
 }
 
 
 mat4 ft_glm::translate(const mat4 &m, const vec3 &v) {
   mat4 translationMatrice = m;
 
-  translationMatrice.v4.x = v.x;
-  translationMatrice.v4.y = v.y;
-  translationMatrice.v4.z = v.z;
+  translationMatrice.data[0][3] += v.x;
+  translationMatrice.data[1][3] += v.y;
+  translationMatrice.data[2][3] += v.z;
 
   return translationMatrice;
 }
 
  mat4 ft_glm::perspective(float fovRadians, float ratio, float near, float far) {
-  float focal = focalLength(fovRadians);
+  if (far == near || ratio == 0.0f) {
+    std::cout << "Error inputs perspective" << std::endl;
+    return mat4();
+  }
 
-  mat4 projectionMatrix = mat4(
-    vec4(focal / ratio, 0.0f, 0.0f, 0.0f),
-    vec4(0.0f, focal, 0.0f, 0.0f),
-    vec4(0.0f, 0.0f, (near+far)/(near-far), -1.0f),
-    vec4(0.0f, 0.0f, (2*near*far)/(near-far), 0.0f)
-  );
+  float tanHalfFov = tanf( fovRadians / 2.0f );
+
+  mat4 projectionMatrix = mat4();
+
+  projectionMatrix[0][0] = 1.0f / (ratio * tanHalfFov);
+  projectionMatrix[1][1] = 1.0f / (tanHalfFov);
+  projectionMatrix[2][2] = - (far + near) / (far - near);
+  projectionMatrix[2][3] = 1.0f;
+  projectionMatrix[3][2] = - (2.0f * far * near) / (far - near);
 
   return projectionMatrix;
 }
 
 mat4 ft_glm::lookAt(const vec3 &position, const vec3 &target, const vec3 &up) {
-  vec3 forward = normalize(target - position);
-  vec3 right = normalize(cross(forward, up));
-  vec3 newUp = cross(right, forward);
+  const vec3 forward = vec3(normalize(target - position));
+  const vec3 right(normalize(cross(forward, up)));
+  const vec3 newUp(cross(right, forward));
 
-  mat4 viewMatrix = mat4(
-    vec4(right.x, right.y, right.z, -scalar(right, position)),
-    vec4(newUp.x, newUp.y, newUp.z, -scalar(newUp, position)),
-    vec4(-forward.x, -forward.y, -forward.z, scalar(forward, position)),
-    vec4(0.0f, 0.0f, 0.0f, 1.0f)
-  );
+  mat4 matrix(1);
+  matrix[0][0] = right.x;
+  matrix[1][0] = right.y;
+  matrix[2][0] = right.z;
+  matrix[0][1] = newUp.x;
+  matrix[1][1] = newUp.y;
+  matrix[2][1] = newUp.z;
+  matrix[0][2] = -forward.x;
+  matrix[1][2] = -forward.y;
+  matrix[2][2] = -forward.z;
+  matrix[3][0] = -scalar(right, position);
+  matrix[3][1] = -scalar(newUp, position);
+  matrix[3][2] = scalar(forward, position);
 
-  return viewMatrix;
+  return matrix;
 }
