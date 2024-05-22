@@ -84,13 +84,14 @@ namespace ft_glm {
     mat4(const mat4& other);
     mat4 &operator=(const mat4 &other);
 
+    vec4 operator*(const vec4 &v) const;
+    mat4 operator*(const mat4 &m) const;
+
     float *operator[](int index);
     const float* operator[](int index) const;
     void show(const std::string &name);
   };
 
-  vec4 operator*(const mat4 &m, const vec4 &v);
-  mat4 operator*(const mat4 &m1, const mat4 &m2);
   mat4 translate(const mat4 &m, const vec3 &v);
 
   mat4 perspective(float fovRadians, float ratio, float near, float far);

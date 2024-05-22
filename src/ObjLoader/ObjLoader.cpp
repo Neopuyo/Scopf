@@ -93,7 +93,7 @@ void ObjLoader::loadOBJ(const std::string &filepath,
   }
     // Now process the indices and build the final vertex, uv and normal vectors
     // For each vertex of each triangle
-    std::cout << "vertexIndices.size() = " << vertexIndices.size() << std::endl;
+    std::cout << "vertexIndices.size() = " << vertexIndices.size() << std::endl; // [!] debugs
     std::cout << "temp_vertices.size() = " << temp_vertices.size() << std::endl;
     std::cout << "temp_uvs.size() = " << temp_uvs.size() << std::endl;
     std::cout << "temp_normals.size() = " << temp_normals.size() << std::endl;

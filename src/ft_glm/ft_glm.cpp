@@ -55,7 +55,7 @@ vec3 ft_glm::cross(const vec3 &v1, const vec3 &v2) {
 
   crossProduct.x = (v1.y * v2.z) - (v1.z * v2.y);
   crossProduct.y = (v1.z * v2.x) - (v1.x * v2.z);
-  crossProduct.y = (v1.x * v2.y) - (v1.y * v2.x);
+  crossProduct.z = (v1.x * v2.y) - (v1.y * v2.x);
 
   return crossProduct;
 }
@@ -110,6 +110,9 @@ ft_glm::mat4::mat4(float f) {
   data[0][0] = f;
   data[1][1] = f;
   data[2][2] = f;
+  if (f == 0.0f || f == 1.0f) {
+    data[3][3] = f;
+  }
 }
 
 ft_glm::mat4::mat4(float m00, float m01, float m02, float m03,
@@ -169,29 +172,28 @@ mat4 &ft_glm::mat4::operator=(const mat4 &other) {
   return *this;
 }
 
-vec4 ft_glm::operator*(const mat4 &m, const vec4 &v) {
+vec4 ft_glm::mat4::operator*(const vec4 &v) const {
   vec4 vertex = vec4();
 
-  vertex.x = (m[0][0] * v.x) + (m[0][1] * v.y) + (m[0][2] * v.z) + (m[0][3] * v.w);
-  vertex.y = (m[1][0] * v.x) + (m[1][1] * v.y) + (m[1][2] * v.z) + (m[1][3] * v.w);
-  vertex.z = (m[2][0] * v.x) + (m[2][1] * v.y) + (m[2][2] * v.z) + (m[2][3] * v.w);
-  vertex.w = (m[3][0] * v.x) + (m[3][1] * v.y) + (m[3][2] * v.z) + (m[3][3] * v.w);
+  vertex.x = (data[0][0] * v.x) + (data[1][0] * v.y) + (data[2][0] * v.z) + (data[3][0] * v.w);
+  vertex.y = (data[0][1] * v.x) + (data[1][1] * v.y) + (data[2][1] * v.z) + (data[3][1] * v.w);
+  vertex.z = (data[0][2] * v.x) + (data[1][2] * v.y) + (data[2][2] * v.z) + (data[3][2] * v.w);
+  vertex.w = (data[0][3] * v.x) + (data[1][3] * v.y) + (data[2][3] * v.z) + (data[3][3] * v.w);
 
   return vertex;
 }
 
-mat4 ft_glm::operator*(const mat4 &m1, const mat4 &m2) {
+mat4 ft_glm::mat4::operator*(const mat4 &m) const {
   mat4 mProduct;
-
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
-      mProduct.data[i][j] = 0;
+      float sum = 0.0f;
       for (int k = 0; k < 4; k++) {
-        mProduct[i][j] += m1[i][k] * m2[k][j];
+        sum += data[k][j] * m[i][k];
       }
+      mProduct[i][j] = sum;
     }
   }
-
   return mProduct;
 }
 
@@ -211,15 +213,17 @@ void ft_glm::mat4::show(const std::string &name) {
 mat4 ft_glm::translate(const mat4 &m, const vec3 &v) {
   mat4 translationMatrice = m;
 
-  translationMatrice[0][3] += v.x;
-  translationMatrice[1][3] += v.y;
-  translationMatrice[2][3] += v.z;
+  translationMatrice[3][0] += v.x;
+  translationMatrice[3][1] += v.y;
+  translationMatrice[3][2] += v.z;
 
   return translationMatrice;
 }
 
 
+// Usefull sources :
 // https://github.com/g-truc/glm/blob/0.9.5/glm/gtc/matrix_transform.inl#L208
+// https://www.songho.ca/opengl/gl_lookattoaxes.html
  mat4 ft_glm::perspective(float fovRadians, float ratio, float near, float far) {
   if (far == near || ratio == 0.0f) {
     std::cout << "Error inputs perspective" << std::endl;
@@ -228,17 +232,16 @@ mat4 ft_glm::translate(const mat4 &m, const vec3 &v) {
 
   float tanHalfFov = tanf( fovRadians / 2.0f );
 
-  mat4 projectionMatrix = mat4();
+  mat4 projectionMatrix = mat4(0.0f);
 
   projectionMatrix[0][0] = 1.0f / (ratio * tanHalfFov);
   projectionMatrix[1][1] = 1.0f / (tanHalfFov);
   projectionMatrix[2][2] = - (far + near) / (far - near);
-  projectionMatrix[2][3] = 1.0f;
+  projectionMatrix[2][3] = - 1.0f;
   projectionMatrix[3][2] = - (2.0f * far * near) / (far - near);
 
   return projectionMatrix;
 }
-
 mat4 ft_glm::lookAt(const vec3 &position, const vec3 &target, const vec3 &up) {
   const vec3 forward = vec3(normalize(target - position));
   const vec3 right(normalize(cross(forward, up)));
