@@ -115,7 +115,14 @@ GLuint BMPLoader::_accessImageData(const std::string &bmpFile) {
   GLuint textureID;
   char *dataBuffer;
 
-  dataBuffer = new char [m_meta.imageSize];
+  try {
+    dataBuffer = new char[m_meta.imageSize];
+  }
+  catch (const std::bad_alloc& e) {
+      std::cerr << "Error: Failed to allocate memory for data buffer. "
+                << "Error message: " << e.what() << std::endl;
+      return 0;
+  }
 
   if (!file.is_open()) {
       std::cerr << bmpFile << " could not be opened, check path and permissions." << std::endl;

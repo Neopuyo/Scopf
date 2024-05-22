@@ -45,7 +45,7 @@ void launchTests() {
 
 int main()
 {
-  Window window = Window(WIN_WIDTH, WIN_HEIGHT, "Tutorial 08");
+  Window window = Window(WIN_WIDTH, WIN_HEIGHT, "Scop");
   Camera camera = Camera(window.getWindow());
 
   // Load Obj file
@@ -277,6 +277,6 @@ int main()
   }
   std::cout << std::endl;
 
-  exit(0);
+  // exit(0);
 
 }

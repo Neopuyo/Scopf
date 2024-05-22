@@ -23,6 +23,7 @@ Window::Window(int width, int height, const char *title) {
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cout << "couldn't load opengl" << std::endl;
+    glfwDestroyWindow(window);
     glfwTerminate();
     return;
   }
@@ -31,6 +32,7 @@ Window::Window(int width, int height, const char *title) {
 }
 
 Window::~Window() {
+  glfwDestroyWindow(window);
   glfwTerminate();
 }
 

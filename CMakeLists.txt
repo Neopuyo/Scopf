@@ -63,6 +63,12 @@ include_directories(
   ${TEST_INCLUDE_DIR}
 )
 
+if(POLICY CMP0072)
+  cmake_policy(SET CMP0072 NEW)
+endif()
+
+set(OPENGL_GL_PREFERENCE "GLVND")
+
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(

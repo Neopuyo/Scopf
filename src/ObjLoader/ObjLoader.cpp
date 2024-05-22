@@ -91,31 +91,22 @@ void ObjLoader::loadOBJ(const std::string &filepath,
       // the line is skip, considered as comment
     }
   }
-    // Now process the indices and build the final vertex, uv and normal vectors
-    // For each vertex of each triangle
-    std::cout << "vertexIndices.size() = " << vertexIndices.size() << std::endl; // [!] debugs
-    std::cout << "temp_vertices.size() = " << temp_vertices.size() << std::endl;
-    std::cout << "temp_uvs.size() = " << temp_uvs.size() << std::endl;
-    std::cout << "temp_normals.size() = " << temp_normals.size() << std::endl;
 
+  for (unsigned int i = 0; i < vertexIndices.size(); i++) {
+    unsigned int vertexIndex = vertexIndices[i];
+    ft_glm::vec3 vertex = temp_vertices[vertexIndex - 1];
+    vertices.push_back(vertex);
+    if (fSlotSize < 2) { continue; }
 
-    for (unsigned int i = 0; i < vertexIndices.size(); i++) {
+    unsigned int uvIndex = uvIndices[i];
+    ft_glm::vec2 uv = temp_uvs[uvIndex - 1];
+    uvs.push_back(uv);
+    if (fSlotSize < 3) { continue; }
 
-        // Get the indices of its attributes
-        unsigned int vertexIndex = vertexIndices[i];
-        ft_glm::vec3 vertex = temp_vertices[vertexIndex - 1];
-        vertices.push_back(vertex);
-        if (fSlotSize < 2) { continue; }
-
-        unsigned int uvIndex = uvIndices[i];
-        ft_glm::vec2 uv = temp_uvs[uvIndex - 1];
-        uvs.push_back(uv);
-        if (fSlotSize < 3) { continue; }
-
-        unsigned int normalIndex = normalIndices[i];
-        ft_glm::vec3 normal = temp_normals[normalIndex - 1];
-        normals.push_back(normal);
-    }
+    unsigned int normalIndex = normalIndices[i];
+    ft_glm::vec3 normal = temp_normals[normalIndex - 1];
+    normals.push_back(normal);
+  }
 }
 
 // To get which format is used for f line : v or v/vt or v/vt/vn
