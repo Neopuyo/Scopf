@@ -16,8 +16,6 @@ void ObjLoader::loadOBJ(const std::string &filepath,
               ft_glm::vec3 &maxs,
               ft_glm::vec3 &mins) const {
 
-  // [!][+] parse les caract spe + fini en .obj
-
   std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
   std::vector<ft_glm::vec3> temp_vertices; 
   std::vector<ft_glm::vec2> temp_uvs;

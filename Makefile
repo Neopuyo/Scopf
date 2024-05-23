@@ -2,8 +2,6 @@ NAME := scop
 CMDE := cmake
 BUILD := build
 
-# will be filtered [a-z][A-Z][0-9][_] only
-# full path will and extension is handle by program
 # .obj
 OBJECT_0 := 42
 OBJECT_1 := teapot
@@ -16,8 +14,7 @@ TEXTURE_0 := poney
 TEXTURE_1 := unikitty
 TEXTURE_2 := uvtemplate
 
-
-.PHONY: all fclean clean build run run2 run3 run4 run5 re print
+.PHONY: all fclean clean build run run0 run1 run2 run3 run4 run5 re print code
 
 all: $(NAME)
 
@@ -26,8 +23,12 @@ $(NAME):
 	$(MAKE) run
 
 build:
-	$(CMDE) -S . -B $(BUILD)
-	$(CMDE) --build $(BUILD)
+	@if [ -d $(BUILD) ]; then \
+		$(MAKE) -C ./$(BUILD); \
+	else \
+		$(CMDE) -S . -B $(BUILD); \
+		$(CMDE) --build $(BUILD); \
+	fi
 
 clean:
 	@if [ -d $(BUILD) ]; then \
@@ -44,7 +45,7 @@ re:
 	$(MAKE) fclean
 	$(MAKE) all
 
-run:
+run run0 run1:
 	cd ./$(BUILD) && ./$(NAME) $(OBJECT_0) $(TEXTURE_0)
 
 run2:
@@ -58,6 +59,9 @@ run4:
 
 run5:
 	cd ./$(BUILD) && ./$(NAME) $(OBJECT_4) $(TEXTURE_1)
+
+code:
+	code .
 
 ############################################
 

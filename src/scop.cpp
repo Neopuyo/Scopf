@@ -37,9 +37,13 @@ int main(int ac, char **av)
   std::vector<ft_glm::vec2> uvs;
   std::vector<ft_glm::vec3> normals; // will not be used yet
 
-  const std::string objFilePath = "../res/obj/42.obj";
-  // const std::string textureFilePath = "../res/textures/unikitty.bmp";
-  const std::string textureFilePath = "../res/textures/poney.bmp";
+  // const std::string objFilePath = "../res/obj/42.obj";
+  // const std::string textureFilePath = "../res/textures/poney.bmp";
+
+  Path::Data const pathData = Path::parseInputsArgs(ac, av);
+
+  // std::cout << "objFilePath = " << data.objFilePath << std::endl;
+  // std::cout << "textureFilePath = " << data.textureFilePath << std::endl;
 
   ft_glm::vec3 maxs;
   ft_glm::vec3 mins;
@@ -47,10 +51,10 @@ int main(int ac, char **av)
   // MY
   try {
 
-    objLoader.loadOBJ(objFilePath, vertices, uvs, normals, maxs, mins);
+    objLoader.loadOBJ(pathData.objFilePath, vertices, uvs, normals, maxs, mins);
 
   } catch(std::exception &e) {
-    std::cout << "Failed to load object file : " + objFilePath;
+    std::cout << "Failed to load object file : " + pathData.objFilePath;
     std::cout << ": " << e.what() << std::endl;
     exit(-1);
   }
@@ -93,11 +97,10 @@ int main(int ac, char **av)
   glfwPollEvents();
   // glfwSetCursorPos(window.getWindow(), WIN_WIDTH / 2, WIN_HEIGHT / 2); // Set the mouse at the center of the screen
 
-  // Load the texture using any two methods
-  // GLuint myTexture = loadBMP_custom("../res/textures/unikitty.bmp");
-  BMPLoader bmpLoader = BMPLoader(textureFilePath);
+
+  BMPLoader bmpLoader = BMPLoader(pathData.textureFilePath);
   if (bmpLoader.getTextureID() == 0) {
-    std::cout << "Failed to load texture bmp file : " + textureFilePath << std::endl;
+    std::cout << "Failed to load texture bmp file : " + pathData.textureFilePath << std::endl;
     exit(-1);
   }
 

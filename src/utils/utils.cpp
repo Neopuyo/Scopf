@@ -1,6 +1,7 @@
 #include "utils.h"
 
-static std::vector<ft_glm::vec3> getColorPalette();
+static std::vector<ft_glm::vec3> _getColorPalette();
+static std::string _parseAnArg(std::string const &av, Path::Kind kind);
 
 void launchTests() {
 
@@ -22,7 +23,7 @@ void launchTests() {
 };
 
 void fillUpColors(std::vector<ft_glm::vec3> &colors, unsigned int count) {
-  std::vector<ft_glm::vec3> colorPalette = getColorPalette();
+  std::vector<ft_glm::vec3> colorPalette = _getColorPalette();
 
   unsigned int index = 0;
   for (unsigned int i = 0 ; i < count; i++) {
@@ -33,7 +34,7 @@ void fillUpColors(std::vector<ft_glm::vec3> &colors, unsigned int count) {
   }
 }
 
-static std::vector<ft_glm::vec3> getColorPalette() {
+static std::vector<ft_glm::vec3> _getColorPalette() {
   std::vector<ft_glm::vec3> colorPalette = {
     // glm::vec3(0.997f,  0.513f,  0.064f),
     // glm::vec3(0.945f,  0.719f,  0.592f),
@@ -66,5 +67,34 @@ static std::vector<ft_glm::vec3> getColorPalette() {
     ft_glm::vec3(0.4f,  0.4f,  0.4f),
   };
   return colorPalette;
+}
+
+// Parsing Inputs ~ Path namespace
+
+Path::Data Path::parseInputsArgs(int ac, char **av) {
+  std::string objPath;
+  std::string texturePath;
+
+  if (ac != 3) {
+    objPath = _parseAnArg(OBJ_DEFAULT_NAME, Path::Kind::OBJECT);
+    texturePath = _parseAnArg(TEXTURE_DEFAULT_NAME, Path::Kind::TEXTURE);
+  } else {
+    objPath = _parseAnArg(av[1], Path::Kind::OBJECT);
+    texturePath = _parseAnArg(av[2], Path::Kind::TEXTURE);
+  }
+
+  return Path::Data(objPath, texturePath);
+}
+
+static std::string _parseAnArg(std::string const &av, Path::Kind kind) {
+  bool isValid = std::all_of(av.begin(), av.end(), [](char c) {
+    return std::isalnum(c) || c == '_';
+  });
+
+  std::string name = isValid ? av : (kind == Path::Kind::OBJECT ? OBJ_DEFAULT_NAME : TEXTURE_DEFAULT_NAME);
+  std::string path = kind == Path::Kind::OBJECT ? OBJ_DEFAULT_DIR : TEXTURE_DEFAULT_DIR;
+  path+= name;
+  path+= kind == Path::Kind::OBJECT ? OBJ_DEFAULT_EXTENSION : TEXTURE_DEFAULT_EXTENSION;
+  return path;
 }
 
