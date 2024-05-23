@@ -16,6 +16,7 @@ set(OBJLOADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/ObjLoader/")
 set(BMPLOADER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/BMPLoader/")
 set(FT_GLM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/ft_glm/")
 set(TEST_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
+set(UTILS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/")
 
 # compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
@@ -42,6 +43,7 @@ add_executable(
   src/ObjLoader/ObjLoader.cpp
   src/BMPLoader/BMPLoader.cpp
   src/ft_glm/ft_glm.cpp
+  src/utils/utils.cpp
 )
 
 include_directories(
@@ -61,6 +63,7 @@ include_directories(
   ${BMPLOADER_INCLUDE_DIR}
   ${FT_GLM_INCLUDE_DIR}
   ${TEST_INCLUDE_DIR}
+  ${UTILS_INCLUDE_DIR}
 )
 
 if(POLICY CMP0072)
