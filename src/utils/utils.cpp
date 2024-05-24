@@ -12,11 +12,16 @@ void launchTests() {
     test_ft_glm_04,
   };
 
+  std::cout << "OpenGL version : " << glGetString(GL_VERSION) << std::endl;
+  std::cout << "-----------------------------------------" << std::endl;
+
   for (unsigned int i = 0; i < unitTests.size(); i++) {
     bool result = unitTests[i]();
     if (!result) {
-      std::cout << "Test matrices 0" << i + 1 << " failed" << std::endl;
+      std::cout << "Test matrices 0" << i + 1 << "  \033[1;31mfailed\033[0m" << std::endl;
       exit(-1);
+    } else {
+      std::cout << "Test matrices 0" << i + 1 << " \033[1;32mOK!\033[0m" << std::endl;
     }
   }
 
@@ -67,6 +72,18 @@ static std::vector<ft_glm::vec3> _getColorPalette() {
     ft_glm::vec3(0.4f,  0.4f,  0.4f),
   };
   return colorPalette;
+}
+
+void fillUpUVs(std::vector<ft_glm::vec2> &uvs, const std::vector<ft_glm::vec3> &vertices, const ft_glm::mat4 &projectionMatrix, ft_glm::mat4 &viewMatrix) {
+    if (uvs.size() == 0) {
+    for (auto vertex : vertices) {
+      // Planar projection - texture
+      ft_glm::vec4 vertexPos = ft_glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
+      ft_glm::vec4 clipPos = projectionMatrix * viewMatrix * vertexPos;
+      ft_glm::vec3 texCoords = ft_glm::vec3(clipPos.x / clipPos.w, clipPos.y / clipPos.w, 0.0f);
+      uvs.push_back(ft_glm::vec2(texCoords.x, texCoords.y));
+    }
+  }
 }
 
 // Parsing Inputs ~ Path namespace

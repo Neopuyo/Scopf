@@ -92,25 +92,17 @@ bool test_ft_glm_01() {
 
   ft_glm::vec4 ft_vector1(1.0f, 2.0f, 3.0f, 4.0f);
   ft_glm::vec4 ft_vector2(4.0f, 3.0f, 2.0f, 1.0f);
-  glm::vec4 vector1(1.0f, 2.0f, 3.0f, 4.0f);
-  glm::vec4 vector2(4.0f, 3.0f, 2.0f, 1.0f);
-
-
-  // Multiplication des matrices et des vecteurs
   ft_glm::vec4 ft_result1 = ft_matrix1 * ft_vector1;
   ft_glm::vec4 ft_result2 = ft_matrix2 * ft_vector2;
+
+  glm::vec4 vector1(1.0f, 2.0f, 3.0f, 4.0f);
+  glm::vec4 vector2(4.0f, 3.0f, 2.0f, 1.0f);
   glm::vec4 result1 = matrix1 * vector1;
   glm::vec4 result2 = matrix2 * vector2;
-
 
   ft_glm::mat4 ft_resultNOPE = ft_matrix1 * ft_matrix2;
   glm::mat4 resultNOPE = matrix1 * matrix2;
 
-
-  // [!] auto SHOW
-  ft_matrix1.show("ft_matrix1");
-  mat4show(matrix1, "matrix1");
-  
   if (!compareMatrices(ft_matrix1, matrix1)) {
     ft_matrix1.show("ft_matrix1");
     mat4show(matrix1, "matrix1");
@@ -122,7 +114,6 @@ bool test_ft_glm_01() {
     mat4show(resultNOPE, "resultNOPE");
     isFailed = true;
   }
-  
 
   if (!compareMatrices(ft_matrix1, matrix1) || !compareMatrices(ft_matrix2, matrix2)) {
     mat4show(matrix1, "matrix1");
@@ -138,7 +129,7 @@ bool test_ft_glm_01() {
   }
 
   if (!compareVec4(ft_result1, result1) || !compareVec4(ft_result2, result2)) {
-      std::cout << std::endl;
+    std::cout << std::endl;
     vec4show(result1, "result1");
     std::cout << "ft_result1 : " << ft_result1 << std::endl;\
     std::cout << std::endl;
@@ -157,15 +148,11 @@ bool test_ft_glm_02() {
   ft_glm::vec3 ft_position(0.0f, 0.0f, 0.0f);
   ft_glm::vec3 ft_target(0.0f, 0.0f, -1.0f);
   ft_glm::vec3 ft_up(0.0f, 1.0f, 0.0f);
-
-
   ft_glm::mat4 ft_resultLookAt = ft_glm::lookAt(ft_position, ft_target, ft_up);
 
   glm::vec3 position(0.0f, 0.0f, 0.0f);
   glm::vec3 target(0.0f, 0.0f, -1.0f);
   glm::vec3 up(0.0f, 1.0f, 0.0f);
-
-
   glm::mat4 resultLookAt = glm::lookAt(position, target, up);
 
   if (!compareMatrices(ft_resultLookAt, resultLookAt)) {

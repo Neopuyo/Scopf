@@ -5,7 +5,9 @@
 Shader::Shader(const std::string &filepath) : m_filepath(filepath), m_rendererID(0) {
   ShaderProgramSource sources = _parseShader(filepath);
 
-  std::cout << sources << std::endl; // [!] display to debug
+  #ifdef TEST_MODE
+    std::cout << sources << std::endl;
+  #endif
 
   m_rendererID = _createShader(sources.vertex, sources.fragment);
 }
@@ -36,8 +38,7 @@ void Shader::setUniform4f(const std::string &name, float v0, float v1, float v2,
 }
 
 void Shader::setUniformMat4f(const std::string &name, const ft_glm::mat4 &matrix) {
-  // [+][!] subscript ??
-  LOGCHECK(glUniformMatrix4fv(_getUniformLocation(name), 1, GL_FALSE, &matrix[0][0])); // glm is already openGL specifiq, can use GL_FALSE
+  LOGCHECK(glUniformMatrix4fv(_getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 }
 
 
@@ -66,18 +67,15 @@ ShaderProgramSource Shader::_parseShader(const std::string &filepath) {
   std::stringstream ss[2];
   ShaderType type = ShaderType::NONE;
   while (getline(stream, line)) {
-
     if (line.find("//") != std::string::npos) {
         continue;
     }
-
     if (line.find("#shader") != std::string::npos) {
       if (line.find("vertex") != std::string::npos)
         type = ShaderType::VERTEX;
       else if (line.find("fragment") != std::string::npos)
         type = ShaderType::FRAGMENT;
     } else {
-      // [!] if type is still NONE ?
       if (type != ShaderType::NONE) {
         ss[static_cast<int>(type)] << line << '\n';
       }
@@ -87,25 +85,23 @@ ShaderProgramSource Shader::_parseShader(const std::string &filepath) {
   return { ss[0].str(), ss[1].str() };
 }
 
+// https://docs.gl/gl4/glShaderSource
 unsigned int Shader::_compileShader(unsigned int type, const std::string &source) {
   unsigned int id = glCreateShader(type);
 
-  // conseille de securiser au cas ou source est free avant qu'on utilise
-  // [!] verifier qu'on a bien une copie ainsi (utiliser "=" sur une réf) ?
   std::string sourceDup = source;
   const char *src = sourceDup.c_str();
-  // const char *src = source.c_str();
 
-  LOGCHECK(glShaderSource(id, 1 , &src, nullptr)); // https://docs.gl/gl4/glShaderSource
-  LOGCHECK(glCompileShader(id)); // [!] dont forget this too :D
+  LOGCHECK(glShaderSource(id, 1 , &src, nullptr)); 
+  LOGCHECK(glCompileShader(id));
 
   // Handle errors
   int result;
-  LOGCHECK(glGetShaderiv(id, GL_COMPILE_STATUS, &result)); // Returns a parameter from a shader object
+  LOGCHECK(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
   if (result == GL_FALSE) {
     int length;
     LOGCHECK(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-    char *message = (char *)alloca(length * sizeof(char)); // allocation sur la stack, pas comme malloc
+    char *message = (char *)alloca(length * sizeof(char));
     LOGCHECK(glGetShaderInfoLog(id, length, &length, message));
     std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader" << std::endl;
     std::cout << message << std::endl;
@@ -115,25 +111,23 @@ unsigned int Shader::_compileShader(unsigned int type, const std::string &source
 }
 
 
+// Shader are like files to compiles. Once done we can delete it, more or less like *.o files)
 unsigned int Shader::_createShader(const std::string &vertexShader, const std::string &fragmentShadder) {
   unsigned int program;
   LOGCHECK(program = glCreateProgram());
   unsigned int vs = _compileShader(GL_VERTEX_SHADER, vertexShader);
   unsigned int fs = _compileShader(GL_FRAGMENT_SHADER, fragmentShadder);
 
-  // Shader are like files to compiles. Once done we can delete it, more or less like *.o files)
   LOGCHECK(glAttachShader(program, vs));
   LOGCHECK(glAttachShader(program, fs));
   LOGCHECK(glLinkProgram(program));
   LOGCHECK(glValidateProgram(program));
 
-  LOGCHECK(glDeleteShader(vs)); // glDetachShader should be technically called -> more info later [?]
+  LOGCHECK(glDeleteShader(vs));
   LOGCHECK(glDeleteShader(fs));
 
-  // [!][?] use this instaed of delete ?
   LOGCHECK(glDetachShader(program, vs));
   LOGCHECK(glDetachShader(program, fs));
-
 
   return program;
 }

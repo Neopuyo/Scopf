@@ -1,12 +1,9 @@
 #pragma once
 
 #include "errorHandling.h"
-
 #include "VertexBuffer.h"
-// #include "vertexBufferLayout.h"
 
 class VertexBuffer;
-// class VertexBufferLayout;
 
 class VertexArray {
   private:
@@ -16,7 +13,6 @@ class VertexArray {
     VertexArray();
     ~VertexArray();
 
-    // void addBuffer(const VertexBuffer &vb, const VertexBufferLayout &layout);
     void addBufferVertexOnly(const VertexBuffer &vb, int attribute, int size);
 
     void bind() const;

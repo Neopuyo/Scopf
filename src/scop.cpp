@@ -24,79 +24,26 @@ int main(int ac, char **av)
   Window window = Window(WIN_WIDTH, WIN_HEIGHT, "Scop");
   Camera camera = Camera(window.getWindow());
 
-  if (ac == 3) {
-    std::cout << "ARG1 = " << av[1] << std::endl;
-    std::cout << "ARG2 = " << av[2] << std::endl;
-  } else {
-    std::cout << "ac == " << ac << std::endl;
-  }
+  DEBUG(launchTests());
 
-  // Load Obj file
   ObjLoader objLoader = ObjLoader();
   std::vector<ft_glm::vec3> vertices;
   std::vector<ft_glm::vec2> uvs;
-  std::vector<ft_glm::vec3> normals; // will not be used yet
-
-  // const std::string objFilePath = "../res/obj/42.obj";
-  // const std::string textureFilePath = "../res/textures/poney.bmp";
-
-  Path::Data const pathData = Path::parseInputsArgs(ac, av);
-
-  // std::cout << "objFilePath = " << data.objFilePath << std::endl;
-  // std::cout << "textureFilePath = " << data.textureFilePath << std::endl;
-
+  std::vector<ft_glm::vec3> normals;
   ft_glm::vec3 maxs;
   ft_glm::vec3 mins;
 
-  // MY
+
+  // [1] Load Obj file + bmp file from ac/av
+  Path::Data const pathData = Path::parseInputsArgs(ac, av);
+
   try {
-
     objLoader.loadOBJ(pathData.objFilePath, vertices, uvs, normals, maxs, mins);
-
   } catch(std::exception &e) {
     std::cout << "Failed to load object file : " + pathData.objFilePath;
     std::cout << ": " << e.what() << std::endl;
     exit(-1);
   }
-
-
-    std::cout << "maxs : " << maxs.x << ", " << maxs.y << ", " << maxs.z << std::endl;
-    std::cout << "mins : " << mins.x << ", " << mins.y << ", " << mins.z << std::endl;
-
-  // ---------------------
-  // Projection matrix: 45° Field of View, 4:3 ratio, display range: 0.1 unit <-> 100 units
-
-  ft_glm::vec3 center = ft_glm::vec3((maxs.x + mins.x) * 0.5f, (maxs.y + mins.y) * 0.5f, (maxs.z + mins.z) * 0.5f);
-   std::cout << "Center : " << center.x << ", " << center.y << ", " << center.z << std::endl;
-
-   ft_glm::mat4 translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_glm::vec3(-center.x, -center.y, -center.z));
-
-
-
-
-  ft_glm::mat4 projectionMatrix = camera.getProjectionMatrix();
-  projectionMatrix.show("projectionMatrix"); // [!] DEBUG
-
-  ft_glm::mat4 viewMatrix = camera.getViewMatrix();
-  viewMatrix.show("viewMatrix"); // [!] DEBUG
-
-  ft_glm::mat4 modelMatrix  =  translateTestMatrix * ft_glm::mat4(1.0f);
-  modelMatrix.show("modelMatrix"); // [!] DEBUG
-  
-  ft_glm::mat4 mvp = projectionMatrix  * viewMatrix * modelMatrix;
-  mvp.show("mvp"); // [!] DEBUG
-
-  launchTests();
-
-
-
-
-  // GLFW : input handler
-  glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE); // Ensure we can capture the escape key being pressed below
-  // glfwSetInputMode(window.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Hide the mouse and enable unlimited movement
-  glfwPollEvents();
-  // glfwSetCursorPos(window.getWindow(), WIN_WIDTH / 2, WIN_HEIGHT / 2); // Set the mouse at the center of the screen
-
 
   BMPLoader bmpLoader = BMPLoader(pathData.textureFilePath);
   if (bmpLoader.getTextureID() == 0) {
@@ -104,24 +51,32 @@ int main(int ac, char **av)
     exit(-1);
   }
 
+  // [2] Compute Matrices for MVP : Model View Projection
+  ft_glm::vec3 center = ft_glm::midPoint(maxs, mins);
+  ft_glm::mat4 translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_glm::vec3(-center.x, -center.y, -center.z));
+  ft_glm::mat4 projectionMatrix = camera.getProjectionMatrix();
+  ft_glm::mat4 viewMatrix = camera.getViewMatrix();
+  ft_glm::mat4 modelMatrix  =  translateTestMatrix * ft_glm::mat4(1.0f);
+  ft_glm::mat4 mvp = projectionMatrix  * viewMatrix * modelMatrix;
 
-  if (uvs.size() == 0) {
-    for (auto vertex : vertices) {
-      // Planar projection - texture
-      ft_glm::vec4 vertexPos = ft_glm::vec4(vertex.x, vertex.y, vertex.z, 1.0f);
-      ft_glm::vec4 clipPos = projectionMatrix * viewMatrix * vertexPos;
-      ft_glm::vec3 texCoords = ft_glm::vec3(clipPos.x / clipPos.w, clipPos.y / clipPos.w, 0.0f);
-      uvs.push_back(ft_glm::vec2(texCoords.x, texCoords.y));
-    }
-  }
+  DEBUG(translateTestMatrix.show("translate matrix"));
+  DEBUG(projectionMatrix.show("projection matrix"));
+  DEBUG(viewMatrix.show("view matrix"));
+  DEBUG(modelMatrix.show("model matrix"));
+  DEBUG(mvp.show("mvp matrix"));
+
+  // [3] GLFW : input handler
+  glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE);
+  glfwPollEvents();
 
 
+  // [4] OpenGL : Vertex Array, Vertex Buffer, Shader, Texture (using or creating UV coordinates)
+  fillUpUVs(uvs, vertices, projectionMatrix, viewMatrix);
 
   VertexArray vertexArray = VertexArray();
   vertexArray.bind();
 
-
-  Shader shader = Shader("../res/shaders/basic_shader.glsl");
+  Shader shader = Shader(SHADER_FILE);
   shader.bind();
 
   VertexBuffer vertexBuffer = VertexBuffer(&vertices[0], vertices.size() * sizeof(ft_glm::vec3));
@@ -136,25 +91,18 @@ int main(int ac, char **av)
   VertexBuffer colorBuffer = VertexBuffer(&colors[0], colors.size() * sizeof(ft_glm::vec3));
   colorBuffer.bind();
 
-
-  // Get a handle for our "MVP" uniform
-  // Only during the initialisation
+  // [5] Setting uniforms in glsl shader
   shader.setUniformMat4f("u_mvp", mvp);
-
-
-  // Get a handle for our "myTextureSampler" uniform
   shader.setUniform1i("u_myTexture", 0);
-
   shader.setUniform1i("u_viewMode", COLOR);
 
-
-  // UNbinding all to let bind process in loop
+  // [6] Prepare Main loop - bind are called with addBufferVertexOnly() calls
   shader.unbind();
   vertexArray.unbind();
   vertexBuffer.unbind();
   uvBuffer.unbind();
+  colorBuffer.unbind();
 
-  bool isUV = (vertices.size() == uvs.size());
   window.setInputMode();
 
   LOGCHECK(glClearColor(0.35f, 0.65f, 0.85f, 1.0f)); // background color
@@ -165,46 +113,30 @@ int main(int ac, char **av)
   LOGCHECK(glDepthFunc(GL_LESS)); // Accept fragment if it is closer to the camera than the former one
   // LOGCHECK(glEnable(GL_CULL_FACE)); // switch this on/off to display or not inside model
 
-  do{
+  do {
     LOGCHECK(glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ));
 
-
     shader.bind();
-    // vertexArray.bind(); // bind are call in vertexArray.addBufferVertexOnly
-    // vertexBuffer.bind();
-    // colorBuffer.bind();
 
-    // inputs handling
-    // camera.computeMatricesFromInputs();
     camera.autoCamera();
     mvp = camera.getProjectionMatrix() * camera.getViewMatrix() * modelMatrix;
     shader.setUniformMat4f("u_mvp", mvp);
     shader.setUniform1i("u_viewMode", camera.getViewMode());
 
     // Bind our texture in Texture Unit 0
-    if (isUV) {
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, bmpLoader.getTextureID());
-      // shader.setUniform1i("u_myTexture", 0); // need ??
-    }
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, bmpLoader.getTextureID());
 
-    
-    vertexArray.addBufferVertexOnly(vertexBuffer, 0, 3); // need call in loop
-
-    if (isUV)
-      vertexArray.addBufferVertexOnly(uvBuffer, 1, 2);
-
+    vertexArray.addBufferVertexOnly(vertexBuffer, 0, 3);
+    vertexArray.addBufferVertexOnly(uvBuffer, 1, 2);
     vertexArray.addBufferVertexOnly(colorBuffer, 2, 3);
 
-
-
-    // Draw the triangles to build the cube
-    LOGCHECK(glDrawArrays(GL_TRIANGLES, 0, vertices.size())); // Starting from vertex 0; 12*3 vertices total -> 12 triangles
-
+    // Draw the triangles to build the object
+    LOGCHECK(glDrawArrays(GL_TRIANGLES, 0, vertices.size()));
 
     LOGCHECK(glDisableVertexAttribArray(0));
-    if (isUV)
-      LOGCHECK(glDisableVertexAttribArray(1));
+    LOGCHECK(glDisableVertexAttribArray(1));
+    LOGCHECK(glDisableVertexAttribArray(2));
 
     // Swap buffers
     window.swapBuffers();
@@ -213,16 +145,5 @@ int main(int ac, char **av)
   } while( !window.shouldClose() 
       && window.getKey(GLFW_KEY_ESCAPE) != GLFW_PRESS 
   );
-
-  // To test without openGl stuff
-  std::vector<std::string> msg {"End", "of", "scop", "final project ", "POUIKA !"};
-
-  for (const std::string &word : msg)
-  {
-    std::cout << word << " ";
-  }
-  std::cout << std::endl;
-
-  // exit(0);
 
 }

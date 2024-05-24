@@ -27,8 +27,6 @@ Window::Window(int width, int height, const char *title) {
     glfwTerminate();
     return;
   }
-
-  std::cout << "OpenGl version : " << glGetString(GL_VERSION) << std::endl;
 }
 
 Window::~Window() {

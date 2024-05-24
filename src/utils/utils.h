@@ -1,6 +1,6 @@
 #pragma once
 
-#include <tests_ft_glm.h> // [!]
+#include <tests_ft_glm.h>
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -14,6 +14,14 @@
 #define TEXTURE_DEFAULT_NAME "poney"
 #define TEXTURE_DEFAULT_DIR "../res/textures/"
 #define TEXTURE_DEFAULT_EXTENSION ".bmp"
+
+#define SHADER_FILE "../res/shaders/basic_shader.glsl"
+
+#ifdef TEST_MODE
+  #define DEBUG(x) x
+#else
+  #define DEBUG(x)
+#endif
 
 namespace Path {
 
@@ -36,3 +44,4 @@ namespace Path {
 void launchTests();
 
 void fillUpColors(std::vector<ft_glm::vec3> &colors, unsigned int count);
+void fillUpUVs(std::vector<ft_glm::vec2> &uvs, const std::vector<ft_glm::vec3> &vertices, const ft_glm::mat4 &projectionMatrix, ft_glm::mat4 &viewMatrix);

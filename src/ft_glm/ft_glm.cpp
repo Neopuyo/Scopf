@@ -60,6 +60,10 @@ vec3 ft_glm::cross(const vec3 &v1, const vec3 &v2) {
   return crossProduct;
 }
 
+vec3 ft_glm::midPoint(const vec3 &v1, const vec3 &v2) {
+  return vec3((v1.x + v2.x) * 0.5f, (v1.y + v2.y) * 0.5f, (v1.z + v2.z) * 0.5f);
+}
+
 // aka dot product
 float ft_glm::scalar(const vec3 &v1, const vec3 &v2) {
     return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);

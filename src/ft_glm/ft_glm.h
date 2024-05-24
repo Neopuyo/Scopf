@@ -37,7 +37,7 @@ namespace ft_glm {
   vec3 operator*(float s, const vec3 &v);
   vec3 operator*(const vec3 &v, float s);
   vec3 operator*(const vec3 &v1, const vec3 &v2);
-  
+  vec3 midPoint(const vec3 &v1, const vec3 &v2);
   vec3 cross(const vec3 &v1, const vec3 &v2);
   float scalar(const vec3 &v1, const vec3 &v2);
   vec3 normalize(const vec3 &v);

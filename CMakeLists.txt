@@ -18,12 +18,18 @@ set(FT_GLM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/ft_glm/")
 set(TEST_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 set(UTILS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/")
 
+# test cache variable
+set(RUN_TESTS OFF CACHE BOOL "Run tests")
+
 # compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 
 # compiler asked for using this define
 add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
 
+if(RUN_TESTS)
+    add_definitions(-DTEST_MODE)
+endif()
 
 add_executable(
   scop
