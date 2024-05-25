@@ -65,12 +65,7 @@ int main(int ac, char **av)
   DEBUG(modelMatrix.show("model matrix"));
   DEBUG(mvp.show("mvp matrix"));
 
-  // [3] GLFW : input handler
-  glfwSetInputMode(window.getWindow(), GLFW_STICKY_KEYS, GL_TRUE);
-  glfwPollEvents();
-
-
-  // [4] OpenGL : Vertex Array, Vertex Buffer, Shader, Texture (using or creating UV coordinates)
+  // [3] OpenGL : Vertex Array, Vertex Buffer, Shader, Texture (using or creating UV coordinates)
   fillUpUVs(uvs, vertices, projectionMatrix, viewMatrix);
 
   VertexArray vertexArray = VertexArray();
@@ -91,27 +86,24 @@ int main(int ac, char **av)
   VertexBuffer colorBuffer = VertexBuffer(&colors[0], colors.size() * sizeof(ft_glm::vec3));
   colorBuffer.bind();
 
-  // [5] Setting uniforms in glsl shader
+  // [4] Setting uniforms in glsl shader
   shader.setUniformMat4f("u_mvp", mvp);
   shader.setUniform1i("u_myTexture", 0);
   shader.setUniform1i("u_viewMode", COLOR);
 
-  // [6] Prepare Main loop - bind are called with addBufferVertexOnly() calls
+  // [5] Prepare Main loop - bind are called with addBufferVertexOnly() calls
   shader.unbind();
   vertexArray.unbind();
   vertexBuffer.unbind();
   uvBuffer.unbind();
   colorBuffer.unbind();
 
+  // [6] Glfw prepare to read user input + OpenGl settings
   window.setInputMode();
-
-  LOGCHECK(glClearColor(0.35f, 0.65f, 0.85f, 1.0f)); // background color
-  // LOGCHECK(glClearColor(0.0f, 0.0f, 0.4f, 0.0f)); // Dark blue background
-
-  // Enable depth test
+  window.pollEvents();
+  LOGCHECK(glClearColor(0.0f, 0.0f, 0.4f, 0.0f));
   LOGCHECK(glEnable(GL_DEPTH_TEST));
-  LOGCHECK(glDepthFunc(GL_LESS)); // Accept fragment if it is closer to the camera than the former one
-  // LOGCHECK(glEnable(GL_CULL_FACE)); // switch this on/off to display or not inside model
+  LOGCHECK(glDepthFunc(GL_LESS));
 
   do {
     LOGCHECK(glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ));
@@ -120,10 +112,9 @@ int main(int ac, char **av)
 
     camera.autoCamera();
     mvp = camera.getProjectionMatrix() * camera.getViewMatrix() * modelMatrix;
+
     shader.setUniformMat4f("u_mvp", mvp);
     shader.setUniform1i("u_viewMode", camera.getViewMode());
-
-    // Bind our texture in Texture Unit 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, bmpLoader.getTextureID());
 
@@ -131,14 +122,12 @@ int main(int ac, char **av)
     vertexArray.addBufferVertexOnly(uvBuffer, 1, 2);
     vertexArray.addBufferVertexOnly(colorBuffer, 2, 3);
 
-    // Draw the triangles to build the object
     LOGCHECK(glDrawArrays(GL_TRIANGLES, 0, vertices.size()));
 
     LOGCHECK(glDisableVertexAttribArray(0));
     LOGCHECK(glDisableVertexAttribArray(1));
     LOGCHECK(glDisableVertexAttribArray(2));
 
-    // Swap buffers
     window.swapBuffers();
     window.pollEvents();
 

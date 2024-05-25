@@ -66,7 +66,7 @@ run4:
 	cd ./$(BUILD) && ./$(NAME) $(OBJECT_3) $(TEXTURE_1)
 
 run5:
-	cd ./$(BUILD) && ./$(NAME) $(OBJECT_4) $(TEXTURE_1)
+	cd ./$(BUILD) && ./$(NAME) $(OBJECT_4) $(TEXTURE_0)
 
 run6:
 	cd ./$(BUILD) && ./$(NAME) $(OBJECT_5) $(TEXTURE_1)

@@ -21,9 +21,6 @@ void ObjLoader::loadOBJ(const std::string &filepath,
   std::vector<ft_glm::vec2> temp_uvs;
   std::vector<ft_glm::vec3> temp_normals;
 
-  // float minX, minY, minZ, maxX, maxY, maxZ;
-  bool isFirstVertex = true;
-
   std::ifstream stream(filepath);
   if (!stream.is_open()) {
     throw FileNotFound();
@@ -46,29 +43,9 @@ void ObjLoader::loadOBJ(const std::string &filepath,
     
     iss >> header; // the first 'word' of line goes into header
     if (header == "v") {
-      // [!][+] TODO: extract v part
       ft_glm::vec3 vertex;
       iss >> vertex.x >> vertex.y >> vertex.z;
-      if (isFirstVertex) {
-        maxs = vertex;
-        mins = vertex;
-        isFirstVertex = false;
-      } else {
-        if (vertex.x < mins.x)
-          mins.x = vertex.x;
-        if (vertex.y < mins.y)
-          mins.y = vertex.y;
-        if (vertex.z < mins.z)
-          mins.z = vertex.z;
-
-        if (vertex.x > maxs.x)
-          maxs.x = vertex.x;
-        if (vertex.y > maxs.y)
-          maxs.y = vertex.y;
-        if (vertex.z > maxs.z)
-          maxs.z = vertex.z;
-      }
-      temp_vertices.push_back(ft_glm::vec3(vertex.x, vertex.y, vertex.z));
+      _parseV(vertex, temp_vertices, maxs, mins);
     } else if (header == "vt") {
       ft_glm::vec2 uv;
       iss >> uv.x >> uv.y;
@@ -105,6 +82,31 @@ void ObjLoader::loadOBJ(const std::string &filepath,
     ft_glm::vec3 normal = temp_normals[normalIndex - 1];
     normals.push_back(normal);
   }
+}
+
+void ObjLoader::_parseV(ft_glm::vec3 &vertex, std::vector<ft_glm::vec3> &temp_vertices, ft_glm::vec3 &maxs, ft_glm::vec3 &mins) const {
+  static bool isFirstVertex = true;
+
+   if (isFirstVertex) {
+      maxs = vertex;
+      mins = vertex;
+      isFirstVertex = false;
+    } else {
+      if (vertex.x < mins.x)
+        mins.x = vertex.x;
+      if (vertex.y < mins.y)
+        mins.y = vertex.y;
+      if (vertex.z < mins.z)
+        mins.z = vertex.z;
+
+      if (vertex.x > maxs.x)
+        maxs.x = vertex.x;
+      if (vertex.y > maxs.y)
+        maxs.y = vertex.y;
+      if (vertex.z > maxs.z)
+        maxs.z = vertex.z;
+    }
+    temp_vertices.push_back(ft_glm::vec3(vertex.x, vertex.y, vertex.z));
 }
 
 // To get which format is used for f line : v or v/vt or v/vt/vn

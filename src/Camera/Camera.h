@@ -6,10 +6,6 @@
 
 #include <ft_glm.h>
 
-// Include GLM [!] delet it when ft is ok
-// #include <glm/glm.hpp>
-// #include <glm/gtc/matrix_transform.hpp>
-
 #include "errorHandling.h"
 #include "Window.h"
 

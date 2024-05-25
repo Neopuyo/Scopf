@@ -39,7 +39,7 @@ add_executable(
   dependencies/tools/errorHandling.cpp
 
   tests/tests_ft_glm.cpp
- 
+
   src/scop.cpp
   src/Window/Window.cpp
   src/Shader/Shader.cpp
