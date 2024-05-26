@@ -77,7 +77,7 @@ static std::vector<ft_glm::vec3> _getColorPalette() {
   return colorPalette;
 }
 
-void fillUpUVs(std::vector<ft_glm::vec2> &uvs, const std::vector<ft_glm::vec3> &vertices, const ft_glm::mat4 &projectionMatrix, ft_glm::mat4 &viewMatrix) {
+void fillUpUVs(std::vector<ft_glm::vec2> &uvs, const std::vector<ft_glm::vec3> &vertices, const ft_glm::mat4 &projectionMatrix, const ft_glm::mat4 &viewMatrix) {
     if (uvs.size() == 0) {
     for (auto vertex : vertices) {
       // Planar projection - texture

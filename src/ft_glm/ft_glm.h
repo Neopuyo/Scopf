@@ -30,6 +30,7 @@ namespace ft_glm {
 
     vec3& operator+=(const vec3& v);
     vec3& operator-=(const vec3& v);
+    vec3 operator-() const;
   };
 
   vec3 operator+(const vec3 &v1, const vec3 &v2);
@@ -101,3 +102,5 @@ namespace ft_glm {
 
 // Out of namespace ft_glm
 std::ostream &operator<<(std::ostream& os, const ft_glm::vec4 &vec);
+
+std::ostream &operator<<(std::ostream& os, const ft_glm::vec3 &vec);

@@ -51,22 +51,12 @@ int main(int ac, char **av)
     exit(-1);
   }
 
-  // [2] Compute Matrices for MVP : Model View Projection
-  ft_glm::vec3 center = ft_glm::midPoint(maxs, mins);
-  ft_glm::mat4 translateTestMatrix = ft_glm::translate(ft_glm::mat4(1.0f), ft_glm::vec3(-center.x, -center.y, -center.z));
-  ft_glm::mat4 projectionMatrix = camera.getProjectionMatrix();
-  ft_glm::mat4 viewMatrix = camera.getViewMatrix();
-  ft_glm::mat4 modelMatrix  =  translateTestMatrix * ft_glm::mat4(1.0f);
-  ft_glm::mat4 mvp = projectionMatrix  * viewMatrix * modelMatrix;
-
-  DEBUG(translateTestMatrix.show("translate matrix"));
-  DEBUG(projectionMatrix.show("projection matrix"));
-  DEBUG(viewMatrix.show("view matrix"));
-  DEBUG(modelMatrix.show("model matrix"));
-  DEBUG(mvp.show("mvp matrix"));
+  // [2] Matrices are computed inside Camera class - The line above is needed to center the initial model position
+  camera.translateModelWithVec3(-ft_glm::midPoint(maxs, mins));
+  DEBUG(camera.showMatrices());
 
   // [3] OpenGL : Vertex Array, Vertex Buffer, Shader, Texture (using or creating UV coordinates)
-  fillUpUVs(uvs, vertices, projectionMatrix, viewMatrix);
+  fillUpUVs(uvs, vertices, camera.getProjectionMatrix(), camera.getViewMatrix());
 
   VertexArray vertexArray = VertexArray();
   vertexArray.bind();
@@ -87,7 +77,7 @@ int main(int ac, char **av)
   colorBuffer.bind();
 
   // [4] Setting uniforms in glsl shader
-  shader.setUniformMat4f("u_mvp", mvp);
+  shader.setUniformMat4f("u_mvp", camera.computeMVP());
   shader.setUniform1i("u_myTexture", 0);
   shader.setUniform1i("u_viewMode", COLOR);
 
@@ -110,10 +100,10 @@ int main(int ac, char **av)
 
     shader.bind();
 
-    camera.autoCamera();
-    mvp = camera.getProjectionMatrix() * camera.getViewMatrix() * modelMatrix;
+    camera.enableZoom();
+    camera.moveModelFromInputs();
 
-    shader.setUniformMat4f("u_mvp", mvp);
+    shader.setUniformMat4f("u_mvp", camera.computeMVP());
     shader.setUniform1i("u_viewMode", camera.getViewMode());
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, bmpLoader.getTextureID());

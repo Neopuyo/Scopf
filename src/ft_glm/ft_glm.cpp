@@ -29,6 +29,9 @@ vec3 &ft_glm::vec3::operator-=(const vec3 &v) {
   return *this;
 }
 
+vec3 ft_glm::vec3::operator-() const {
+  return vec3(-x, -y, -z);
+}
 
 vec3 ft_glm::operator+(const vec3 &v1, const vec3 &v2) {
   return vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
@@ -101,11 +104,17 @@ bool ft_glm::operator==(const ft_glm::vec4 &lhs, const ft_glm::vec4 &rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
 }
 
+// ----------------- Display
+
 std::ostream& operator<<(std::ostream& os, const ft_glm::vec4& vec) {
-    os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
-    return os;
+  os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
+  return os;
 }
 
+std::ostream &operator<<(std::ostream& os, const ft_glm::vec3 &vec) {
+  os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+  return os;
+}
 
 
 // ------------- Matrices
