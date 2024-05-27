@@ -97,7 +97,6 @@ void Camera::enableZoom() {
 
   // Camera go closer
   if (glfwGetKey( m_window, GLFW_KEY_KP_ADD )  == GLFW_PRESS ) {
-    std::cout << "cameraDistance: " << cameraDistance << std::endl;
     cameraDistance -=  m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
     if (cameraDistance < 0.1f) {
       cameraDistance = 0.1f;
@@ -105,7 +104,6 @@ void Camera::enableZoom() {
   }
   // Camera go away
   if (glfwGetKey( m_window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS ) {
-    std::cout << "cameraDistance: " << cameraDistance << std::endl;
     cameraDistance +=  m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
   }
 

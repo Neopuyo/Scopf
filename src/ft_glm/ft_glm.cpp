@@ -53,6 +53,26 @@ vec3 ft_glm::operator*(const vec3& v1, const vec3& v2) {
   return vec3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 }
 
+float &ft_glm::vec3::operator[](int index) {
+  static float invalid_value = 0.0f;
+  switch (index) {
+    case 0: return x;
+    case 1: return y;
+    case 2: return z;
+    default: throw std::out_of_range("Invalid index");
+  }
+}
+
+const float &ft_glm::vec3::operator[](int index) const {
+  static float invalid_value = 0.0f;
+  switch (index) {
+    case 0: return x;
+    case 1: return y;
+    case 2: return z;
+    default: throw std::out_of_range("Invalid index");
+  }
+}
+
 vec3 ft_glm::cross(const vec3 &v1, const vec3 &v2) {
   vec3 crossProduct;
 
@@ -159,19 +179,17 @@ ft_glm::mat4::mat4(const mat4 &other) {
 }
 
 float *ft_glm::mat4::operator[](int index) {
-    if (index < 0 || index >= 4) {
-        static float invalid_value = 0.0f;
-        return &invalid_value;
-    }
-    return data[index];
+  if (index < 0 || index >= 4) {
+    throw std::out_of_range("Invalid index");
+  }
+  return data[index];
 }
 
 const float *ft_glm::mat4::operator[](int index) const {
   if (index < 0 || index >= 4) {
-    static float invalid_value = 0.0f;
-      return &invalid_value;
+    throw std::out_of_range("Invalid index");
   }
-    return data[index];
+  return data[index];
 }
 
 mat4 &ft_glm::mat4::operator=(const mat4 &other) {
@@ -275,4 +293,42 @@ mat4 ft_glm::lookAt(const vec3 &position, const vec3 &target, const vec3 &up) {
   matrix[3][2] = scalar(forward, position);
 
   return matrix;
+}
+
+ft_glm::mat4 ft_glm::rotate(mat4 const &m, float const &angle, vec3 const &v) {
+  float const a = angle;
+  float const c = cos(a);
+  float const s = sin(a);
+
+  vec3 axis(normalize(v));
+  vec3 temp((1.0f - c) * axis);
+
+  mat4 rotate;
+  rotate[0][0] = c + temp[0] * axis[0];
+  rotate[0][1] = 0 + temp[0] * axis[1] + s * axis[2];
+  rotate[0][2] = 0 + temp[0] * axis[2] - s * axis[1];
+
+  rotate[1][0] = 0 + temp[1] * axis[0] - s * axis[2];
+  rotate[1][1] = c + temp[1] * axis[1];
+  rotate[1][2] = 0 + temp[1] * axis[2] + s * axis[0];
+
+  rotate[2][0] = 0 + temp[2] * axis[0] + s * axis[1];
+  rotate[2][1] = 0 + temp[2] * axis[1] - s * axis[0];
+  rotate[2][2] = c + temp[2] * axis[2];
+
+  mat4 rotationMatrix;
+
+  // rotationMatrix[0] = m[0] * rotate[0][0];
+
+  // for (int i = 0; i < 4; i++) {
+  //   float* row = rotationMatrix[i];
+  //   row[0] = m[i][0] * rotate[i][0] + m[i][1] * rotate[i][1] + m[i][2] * rotate[i][2];
+  //   rotationMatrix[0][i] = row[0];
+  // }
+
+  // rotationMatrix[0] = m[0] * rotate[0][0] + m[1] * rotate[0][1] + m[2] * rotate[0][2];
+  // rotationMatrix[1] = m[0] * rotate[1][0] + m[1] * rotate[1][1] + m[2] * rotate[1][2];
+  // rotationMatrix[2] = m[0] * rotate[2][0] + m[1] * rotate[2][1] + m[2] * rotate[2][2];
+  // rotationMatrix[3] = m[3];
+  return rotationMatrix;
 }

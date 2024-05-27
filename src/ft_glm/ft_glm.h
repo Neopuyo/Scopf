@@ -28,6 +28,9 @@ namespace ft_glm {
     vec3() : x(0.0f), y(0.0f), z(0.0f) {}
     vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
+    float &operator[](int index);
+    const float &operator[](int index) const;
+
     vec3& operator+=(const vec3& v);
     vec3& operator-=(const vec3& v);
     vec3 operator-() const;
@@ -89,11 +92,12 @@ namespace ft_glm {
     mat4 operator*(const mat4 &m) const;
 
     float *operator[](int index);
-    const float* operator[](int index) const;
+    const float *operator[](int index) const;
     void show(const std::string &name);
   };
 
   mat4 translate(const mat4 &m, const vec3 &v);
+  mat4 rotate(mat4 const & m, float const &angle, vec3 const &v);
 
   mat4 perspective(float fovRadians, float ratio, float near, float far);
   mat4 lookAt(const vec3 &position, const vec3 &target, const vec3 &up);
