@@ -44,4 +44,5 @@ namespace Path {
 void launchTests();
 
 void fillUpColors(std::vector<ft_glm::vec3> &colors, unsigned int count);
+void fillUpColorsRandom(std::vector<ft_glm::vec3> &colors, unsigned int count);
 void fillUpUVs(std::vector<ft_glm::vec2> &uvs, const std::vector<ft_glm::vec3> &vertices, const ft_glm::mat4 &projectionMatrix, const ft_glm::mat4 &viewMatrix);

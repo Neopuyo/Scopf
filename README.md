@@ -2,6 +2,47 @@
 
 > Learning basics of graphic programming using **`openGL`** library and **C++**
 
+## How use project
+
+### **Launch**  
+Easy launch typing `make` command in terminal.  
+The Makefile will call `CMake` commands to build the ``C++`` project.  
+
+### **Commands**
+
+Keyboard key | Feature
+---| ---
+W / ⬆️ | Move object increasing **Y** axis
+S / ⬇️ | Move object discreasing **Y** axis
+D / ➡️ | Move object increasing **X** axis
+A / ⬅️ | Move object discreasing **X** axis
+V | Move object increasing **Z** axis
+C | Move object discreasing **Z** axis
+**Modifiers** | 
+Shift | Hold on to inscrease the `move speed` and camera `zoom speed`
+Alt | Hold on to `rotate` along **X**, **Y** or **Z** axis instead of `moving`
+**Modes** | --- 
+T | Enable ``texture`` mode
+Y | Enable ``color`` mode
+SPACE | Pause or resume ``autorotation``
+**Num. pad** | 
+/ | Switch to ``wireframe`` triangles
+\* | Switch to ``filled`` triangles
+\+ | Zoom in using ``camera``
+\- | Zoom out using ``camera``
+0-9 | Select ``rotation speed``
+**A bit more** |  
+`make color` | use the command to compile project with random ``colors`` instead of ``grayscale``
+ESC | To close window and exit program
+
+### **Screenshots**
+
+< | >
+---| ---
+![screen 1](./res/readme/screen1.png) |![screen 2](./res/readme/screen2.png)
+![screen 3](./res/readme/screen3.png) |![screen 4](./res/readme/screen4.png)
+![screen 5](./res/readme/screen5.png) |![screen 6](./res/readme/screen6.png)
+![screen 7](./res/readme/screen7.png) |![screen 8](./res/readme/screen8.png)
 
 
 

@@ -1,6 +1,7 @@
 NAME := scop
 CMDE := cmake
 DEBUG_OPT := -DRUN_TESTS=ON
+COLOR_OPT := -DCOLOR_RANDOM=ON
 BUILD := build
 
 # .obj
@@ -18,7 +19,7 @@ TEXTURE_1 := unikitty
 TEXTURE_2 := uvtemplate
 TEXTURE_SKULL := skull
 
-.PHONY: all fclean clean build run run0 run1 run2 run3 run4 run5 run6 run7 run8 run9 run10 re print code debug
+.PHONY: all fclean clean build run run0 run1 run2 run3 run4 run5 run6 run7 run8 run9 run10 re print code debug color
 
 all: $(NAME)
 
@@ -36,6 +37,10 @@ build:
 
 debug:
 	$(CMDE) $(DEBUG_OPT) -S . -B $(BUILD)
+	$(MAKE) all
+
+color:
+	$(CMDE) $(COLOR_OPT) -S . -B $(BUILD)
 	$(MAKE) all
 
 clean:

@@ -56,7 +56,7 @@ int main(int ac, char **av)
   camera.translateModelToCenter();
   DEBUG(camera.showMatrices());
 
-  // [3] OpenGL : Vertex Array, Vertex Buffer, Shader, Texture (using or creating UV coordinates)
+  // [3] OpenGL : Vertex Array, Vertex Buffer, Shader, Color, Texture,  (using or creating UV coordinates)
   fillUpUVs(uvs, vertices, camera.getProjectionMatrix(), camera.getViewMatrix());
 
   VertexArray vertexArray = VertexArray();
@@ -72,7 +72,11 @@ int main(int ac, char **av)
   uvBuffer.bind();
 
   std::vector<ft_glm::vec3> colors;
-  fillUpColors(colors, vertices.size());
+  #ifdef COLOR_RANDOM
+    fillUpColorsRandom(colors, vertices.size());
+  #else 
+    fillUpColors(colors, vertices.size());
+  #endif
 
   VertexBuffer colorBuffer = VertexBuffer(&colors[0], colors.size() * sizeof(ft_glm::vec3));
   colorBuffer.bind();
@@ -108,6 +112,7 @@ int main(int ac, char **av)
     camera.selectRotationSpeedFromInputs();
     camera.switchAutoRotateFromInputs();
     camera.switchWireframeFromInputs();
+    // camera.randomizeColor();
 
     shader.setUniformMat4f("u_mvp", camera.computeMVP());
     shader.setUniform1i("u_viewMode", camera.getViewMode());

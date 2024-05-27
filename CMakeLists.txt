@@ -28,7 +28,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
 
 if(RUN_TESTS)
-    add_definitions(-DTEST_MODE)
+  add_definitions(-DTEST_MODE)
+endif()
+
+if(COLOR_RANDOM)
+  add_definitions(-DCOLOR_RANDOM)
 endif()
 
 add_executable(

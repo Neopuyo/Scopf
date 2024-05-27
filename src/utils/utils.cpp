@@ -2,6 +2,7 @@
 
 static std::vector<ft_glm::vec3> _getColorPalette();
 static std::string _parseAnArg(std::string const &av, Path::Kind kind);
+static ft_glm::vec3 _getRandomColor();
 
 void launchTests() {
 
@@ -37,6 +38,24 @@ void fillUpColors(std::vector<ft_glm::vec3> &colors, unsigned int count) {
     if (index >= colorPalette.size())
       index = 0;
   }
+}
+
+void fillUpColorsRandom(std::vector<ft_glm::vec3> &colors, unsigned int count) {
+  ft_glm::vec3 randomColor = _getRandomColor();
+
+  for (unsigned int i = 0 ; i < count; i++) {
+    // if (i % 3 == 0)
+      randomColor = _getRandomColor();
+    colors.push_back(randomColor);
+  }
+}
+
+static ft_glm::vec3 _getRandomColor() {
+  float r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+  float g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+  float b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+  ft_glm::vec3 color(r, g, b);
+  return color;
 }
 
 // Each triplet will make a triangle color
