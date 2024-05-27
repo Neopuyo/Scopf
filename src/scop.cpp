@@ -52,7 +52,8 @@ int main(int ac, char **av)
   }
 
   // [2] Matrices are computed inside Camera class - The line above is needed to center the initial model position
-  camera.translateModelWithVec3(-ft_glm::midPoint(maxs, mins));
+  camera.modelCenter = ft_glm::midPoint(maxs, mins);
+  camera.translateModelToCenter();
   DEBUG(camera.showMatrices());
 
   // [3] OpenGL : Vertex Array, Vertex Buffer, Shader, Texture (using or creating UV coordinates)
@@ -101,7 +102,11 @@ int main(int ac, char **av)
     shader.bind();
 
     camera.enableZoom();
+    camera.rotateModelFromInputs();
+    camera.autoRotate();
     camera.moveModelFromInputs();
+    camera.switchAutoRotatefrominputs();
+    camera.selectRotationSpeedFromInputs();
 
     shader.setUniformMat4f("u_mvp", camera.computeMVP());
     shader.setUniform1i("u_viewMode", camera.getViewMode());

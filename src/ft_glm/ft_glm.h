@@ -71,11 +71,11 @@ namespace ft_glm {
   struct mat4 {
 
 
-    float data[4][4] = {
-      {1.0f, 0.0f, 0.0f, 0.0f}, // column 1
-      {0.0f, 1.0f, 0.0f, 0.0f}, // column 2
-      {0.0f, 0.0f, 1.0f, 0.0f}, // column 3
-      {0.0f, 0.0f, 0.0f, 1.0f}  // column 4
+    float data[16] = {
+      1.0f, 0.0f, 0.0f, 0.0f, // column 1
+      0.0f, 1.0f, 0.0f, 0.0f, // column 2
+      0.0f, 0.0f, 1.0f, 0.0f, // column 3
+      0.0f, 0.0f, 0.0f, 1.0f  // column 4
     };
 
     mat4() {};
@@ -91,8 +91,8 @@ namespace ft_glm {
     vec4 operator*(const vec4 &v) const;
     mat4 operator*(const mat4 &m) const;
 
-    float *operator[](int index);
-    const float *operator[](int index) const;
+    float &operator[](int index);
+    const float &operator[](int index) const;
     void show(const std::string &name);
   };
 

@@ -138,11 +138,11 @@ std::ostream &operator<<(std::ostream& os, const ft_glm::vec3 &vec) {
 // ------------- Matrices
 
 ft_glm::mat4::mat4(float f) {
-  data[0][0] = f;
-  data[1][1] = f;
-  data[2][2] = f;
+  data[0] = f;
+  data[5] = f;
+  data[10] = f;
   if (f == 0.0f || f == 1.0f) {
-    data[3][3] = f;
+    data[15] = f;
   }
 }
 
@@ -150,41 +150,41 @@ ft_glm::mat4::mat4(float m00, float m01, float m02, float m03,
                    float m10, float m11, float m12, float m13,
                    float m20, float m21, float m22, float m23,
                    float m30, float m31, float m32, float m33) {
-    data[0][0] = m00;
-    data[0][1] = m01;
-    data[0][2] = m02;
-    data[0][3] = m03;
-    data[1][0] = m10;
-    data[1][1] = m11;
-    data[1][2] = m12;
-    data[1][3] = m13;
-    data[2][0] = m20;
-    data[2][1] = m21;
-    data[2][2] = m22;
-    data[2][3] = m23;
-    data[3][0] = m30;
-    data[3][1] = m31;
-    data[3][2] = m32;
-    data[3][3] = m33;
+    data[0] = m00;
+    data[1] = m01;
+    data[2] = m02;
+    data[3] = m03;
+    data[4] = m10;
+    data[5] = m11;
+    data[6] = m12;
+    data[7] = m13;
+    data[8] = m20;
+    data[9] = m21;
+    data[10] = m22;
+    data[11] = m23;
+    data[12] = m30;
+    data[13] = m31;
+    data[14] = m32;
+    data[15] = m33;
 }
 
 ft_glm::mat4::mat4(const mat4 &other) {
  for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
-        data[i][j] = other.data[i][j];
+        data[i * 4 + j] = other.data[i * 4 + j];
     }
   }
 }
 
-float *ft_glm::mat4::operator[](int index) {
-  if (index < 0 || index >= 4) {
+float &ft_glm::mat4::operator[](int index) {
+  if (index < 0 || index >= 16) {
     throw std::out_of_range("Invalid index");
   }
   return data[index];
 }
 
-const float *ft_glm::mat4::operator[](int index) const {
-  if (index < 0 || index >= 4) {
+const float &ft_glm::mat4::operator[](int index) const {
+  if (index < 0 || index >= 16) {
     throw std::out_of_range("Invalid index");
   }
   return data[index];
@@ -194,7 +194,7 @@ mat4 &ft_glm::mat4::operator=(const mat4 &other) {
   if (this != &other) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            data[i][j] = other.data[i][j];
+            data[i * 4 + j] = other.data[i * 4 + j];
         }
     }
   }
@@ -204,10 +204,10 @@ mat4 &ft_glm::mat4::operator=(const mat4 &other) {
 vec4 ft_glm::mat4::operator*(const vec4 &v) const {
   vec4 vertex = vec4();
 
-  vertex.x = (data[0][0] * v.x) + (data[1][0] * v.y) + (data[2][0] * v.z) + (data[3][0] * v.w);
-  vertex.y = (data[0][1] * v.x) + (data[1][1] * v.y) + (data[2][1] * v.z) + (data[3][1] * v.w);
-  vertex.z = (data[0][2] * v.x) + (data[1][2] * v.y) + (data[2][2] * v.z) + (data[3][2] * v.w);
-  vertex.w = (data[0][3] * v.x) + (data[1][3] * v.y) + (data[2][3] * v.z) + (data[3][3] * v.w);
+  vertex.x = (data[0] * v.x) + (data[4] * v.y) + (data[8] * v.z) + (data[12] * v.w);
+  vertex.y = (data[1] * v.x) + (data[5] * v.y) + (data[9] * v.z) + (data[13] * v.w);
+  vertex.z = (data[2] * v.x) + (data[6] * v.y) + (data[10] * v.z) + (data[14] * v.w);
+  vertex.w = (data[3] * v.x) + (data[7] * v.y) + (data[11] * v.z) + (data[15] * v.w);
 
   return vertex;
 }
@@ -218,9 +218,9 @@ mat4 ft_glm::mat4::operator*(const mat4 &m) const {
     for (int j = 0; j < 4; j++) {
       float sum = 0.0f;
       for (int k = 0; k < 4; k++) {
-        sum += data[k][j] * m[i][k];
+        sum += data[k * 4 + j] * m[i * 4 + k];
       }
-      mProduct[i][j] = sum;
+      mProduct[i * 4 + j] = sum;
     }
   }
   return mProduct;
@@ -231,7 +231,7 @@ void ft_glm::mat4::show(const std::string &name) {
   for (int i = 0; i < 4; i++) {
     std::cout << "  ";
     for (int j = 0; j < 4; j++) {
-      std::cout << std::fixed << std::setprecision(2) << (data[i][j] >= 0 ? " " : "") << data[i][j] << " ";
+      std::cout << std::fixed << std::setprecision(2) << (data[i * 4 + j] >= 0 ? " " : "") << data[i * 4 + j] << " ";
     }
     std::cout << std::endl;
   }
@@ -242,9 +242,9 @@ void ft_glm::mat4::show(const std::string &name) {
 mat4 ft_glm::translate(const mat4 &m, const vec3 &v) {
   mat4 translationMatrice = m;
 
-  translationMatrice[3][0] += v.x;
-  translationMatrice[3][1] += v.y;
-  translationMatrice[3][2] += v.z;
+  translationMatrice[12] += v.x;
+  translationMatrice[13] += v.y;
+  translationMatrice[14] += v.z;
 
   return translationMatrice;
 }
@@ -263,11 +263,11 @@ mat4 ft_glm::translate(const mat4 &m, const vec3 &v) {
 
   mat4 projectionMatrix = mat4(0.0f);
 
-  projectionMatrix[0][0] = 1.0f / (ratio * tanHalfFov);
-  projectionMatrix[1][1] = 1.0f / (tanHalfFov);
-  projectionMatrix[2][2] = - (far + near) / (far - near);
-  projectionMatrix[2][3] = - 1.0f;
-  projectionMatrix[3][2] = - (2.0f * far * near) / (far - near);
+  projectionMatrix[0] = 1.0f / (ratio * tanHalfFov);
+  projectionMatrix[5] = 1.0f / (tanHalfFov);
+  projectionMatrix[10] = - (far + near) / (far - near);
+  projectionMatrix[11] = - 1.0f;
+  projectionMatrix[14] = - (2.0f * far * near) / (far - near);
 
   return projectionMatrix;
 }
@@ -277,18 +277,18 @@ mat4 ft_glm::lookAt(const vec3 &position, const vec3 &target, const vec3 &up) {
   const vec3 newUp(cross(right, forward));
 
   mat4 matrix(1);
-  matrix[0][0] = right.x;
-  matrix[1][0] = right.y;
-  matrix[2][0] = right.z;
-  matrix[0][1] = newUp.x;
-  matrix[1][1] = newUp.y;
-  matrix[2][1] = newUp.z;
-  matrix[0][2] = -forward.x;
-  matrix[1][2] = -forward.y;
-  matrix[2][2] = -forward.z;
-  matrix[3][0] = -scalar(right, position);
-  matrix[3][1] = -scalar(newUp, position);
-  matrix[3][2] = scalar(forward, position);
+  matrix[0] = right.x;
+  matrix[4] = right.y;
+  matrix[8] = right.z;
+  matrix[1] = newUp.x;
+  matrix[5] = newUp.y;
+  matrix[9] = newUp.z;
+  matrix[2] = -forward.x;
+  matrix[6] = -forward.y;
+  matrix[10] = -forward.z;
+  matrix[12] = -scalar(right, position);
+  matrix[13] = -scalar(newUp, position);
+  matrix[14] = scalar(forward, position);
 
   return matrix;
 }
@@ -303,30 +303,28 @@ ft_glm::mat4 ft_glm::rotate(mat4 const &m, float const &angle, vec3 const &v) {
   vec3 temp((1.0f - c) * axis);
 
   mat4 rotate;
-  rotate[0][0] = c + temp[0] * axis[0];
-  rotate[0][1] = 0 + temp[0] * axis[1] + s * axis[2];
-  rotate[0][2] = 0 + temp[0] * axis[2] - s * axis[1];
+  rotate[0] = c + temp[0] * axis[0];
+  rotate[1] = 0 + temp[0] * axis[1] + s * axis[2];
+  rotate[2] = 0 + temp[0] * axis[2] - s * axis[1];
 
-  rotate[1][0] = 0 + temp[1] * axis[0] - s * axis[2];
-  rotate[1][1] = c + temp[1] * axis[1];
-  rotate[1][2] = 0 + temp[1] * axis[2] + s * axis[0];
+  rotate[4] = 0 + temp[1] * axis[0] - s * axis[2];
+  rotate[5] = c + temp[1] * axis[1];
+  rotate[6] = 0 + temp[1] * axis[2] + s * axis[0];
 
-  rotate[2][0] = 0 + temp[2] * axis[0] + s * axis[1];
-  rotate[2][1] = 0 + temp[2] * axis[1] - s * axis[0];
-  rotate[2][2] = c + temp[2] * axis[2];
+  rotate[8] = 0 + temp[2] * axis[0] + s * axis[1];
+  rotate[9] = 0 + temp[2] * axis[1] - s * axis[0];
+  rotate[10] = c + temp[2] * axis[2];
 
   mat4 rotationMatrix;
 
-  (void)m;
-  // rotationMatrix[0] = m[0] * rotate[0][0];
+  for (int i = 0; i < 4; i++) {
+    rotationMatrix[i * 4 + 0] = m[i * 4 + 0] * rotate[0] + m[i * 4 + 1] * rotate[1] + m[i * 4 + 2] * rotate[2];
+    rotationMatrix[i * 4 + 1] = m[i * 4 + 0] * rotate[4] + m[i * 4 + 1] * rotate[5] + m[i * 4 + 2] * rotate[6];
+    rotationMatrix[i * 4 + 2] = m[i * 4 + 0] * rotate[8] + m[i * 4 + 1] * rotate[9] + m[i * 4 + 2] * rotate[10];
+    rotationMatrix[i * 4 + 3] = m[i * 4 + 3];
+  }
 
-  // for (int i = 0; i < 4; i++) {
-  //   float* row = rotationMatrix[i];
-  //   row[0] = m[i][0] * rotate[i][0] + m[i][1] * rotate[i][1] + m[i][2] * rotate[i][2];
-  //   rotationMatrix[0][i] = row[0];
-  // }
-
-  // rotationMatrix[0] = m[0] * rotate[0][0] + m[1] * rotate[0][1] + m[2] * rotate[0][2];
+  // rotationMatrix[0] = m[0] * Rotate[0][0] + m[1] * Rotate[0][1] + m[2] * Rotate[0][2];
   // rotationMatrix[1] = m[0] * rotate[1][0] + m[1] * rotate[1][1] + m[2] * rotate[1][2];
   // rotationMatrix[2] = m[0] * rotate[2][0] + m[1] * rotate[2][1] + m[2] * rotate[2][2];
   // rotationMatrix[3] = m[3];

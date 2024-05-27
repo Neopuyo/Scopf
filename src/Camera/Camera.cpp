@@ -16,16 +16,33 @@ bool Camera::isShiftPressed() const {
   return glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 }
 
+bool Camera::isAltPressed() const { 
+  return glfwGetKey(m_window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS;
+}
+
 void Camera::showMatrices() const {
   getProjectionMatrix().show("projection matrix");
   getViewMatrix().show("view matrix");
   getModelMatrix().show("model matrix");
-  computeMVP().show("mvp matrix");
+  computeMVP().show("MVP");
+}
+
+void Camera::translateModelToCenter() {
+  ft_glm::mat4 translateMatrix = ft_glm::translate(ft_glm::mat4(1.0f), -modelCenter);
+  m_modelMatrix  =  translateMatrix * m_modelMatrix;
 }
 
 void Camera::translateModelWithVec3(const ft_glm::vec3 &vec3) {
   ft_glm::mat4 translateMatrix = ft_glm::translate(ft_glm::mat4(1.0f), vec3);
   m_modelMatrix  =  translateMatrix * m_modelMatrix;
+}
+
+void Camera::rotateModelWithVec3(const ft_glm::vec3 &vec3) {
+  ft_glm::mat4 translateToOrigin = ft_glm::translate(ft_glm::mat4(1.0f), -m_model_position);
+  ft_glm::mat4 rotateMatrix = ft_glm::rotate(ft_glm::mat4(1.0f), ft_glm::radians(m_rotationRate), vec3);
+  ft_glm::mat4 translateBackToPos = ft_glm::translate(ft_glm::mat4(1.0f), m_model_position);
+
+  m_modelMatrix = translateBackToPos * rotateMatrix * translateToOrigin * m_modelMatrix;
 }
 
 ft_glm::mat4 Camera::computeMVP() const {
@@ -35,40 +52,47 @@ ft_glm::mat4 Camera::computeMVP() const {
 void Camera::moveModelFromInputs() {
 
   ft_glm::vec3 moveVec = ft_glm::vec3(0.0f, 0.0f, 0.0f);
+  float value = m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
 
   // Moving Y axis (+)
-  if (glfwGetKey( m_window, GLFW_KEY_UP )  == GLFW_PRESS 
-    || glfwGetKey( m_window, GLFW_KEY_W ) == GLFW_PRESS ) {
-    moveVec.y += m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
+  if ((glfwGetKey( m_window, GLFW_KEY_UP )  == GLFW_PRESS 
+    || glfwGetKey( m_window, GLFW_KEY_W ) == GLFW_PRESS ) && !isAltPressed()) {
+    moveVec.y += value;
+    m_model_position.y += value;
   }
   // Moving Y axis (-)
-  if (glfwGetKey( m_window, GLFW_KEY_DOWN) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_S ) == GLFW_PRESS ) {
-    moveVec.y -= m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
+  if ((glfwGetKey( m_window, GLFW_KEY_DOWN) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_S ) == GLFW_PRESS ) && !isAltPressed()) {
+    moveVec.y -= value;
+    m_model_position.y -= value;
   }
 
   // Moving X axis (+)
-  if (glfwGetKey( m_window, GLFW_KEY_RIGHT ) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_D ) == GLFW_PRESS) {
-    moveVec.x += m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
+  if ((glfwGetKey( m_window, GLFW_KEY_RIGHT ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_D ) == GLFW_PRESS) && !isAltPressed()) {
+    moveVec.x += value;
+    m_model_position.x += value;
   }
 
   // Moving X axis (-)
-  if (glfwGetKey( m_window, GLFW_KEY_LEFT ) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_A ) == GLFW_PRESS) {
-    moveVec.x -= m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);;
+  if ((glfwGetKey( m_window, GLFW_KEY_LEFT ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_A ) == GLFW_PRESS) && !isAltPressed()) {
+    moveVec.x -= value;
+    m_model_position.x -= value;
   }
 
   // Moving Z axis (+)
-  if (glfwGetKey( m_window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_C ) == GLFW_PRESS) {
-    moveVec.z += m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
+  if ((glfwGetKey( m_window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_C ) == GLFW_PRESS) && !isAltPressed()) {
+    moveVec.z += value;
+    m_model_position.z += value;
   }
 
   // Moving Z axis (-)
-  if (glfwGetKey( m_window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_V ) == GLFW_PRESS) {
-    moveVec.z -= m_moveRate * (isShiftPressed() ? m_shiftRate : 1.0f);
+  if ((glfwGetKey( m_window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_V ) == GLFW_PRESS) && !isAltPressed()) {
+    moveVec.z -= value;
+    m_model_position.z -= value;
   }
 
    // Swap View mode
@@ -81,7 +105,104 @@ void Camera::moveModelFromInputs() {
   translateModelWithVec3(moveVec);
 }
 
+void Camera::rotateModelFromInputs() {
 
+  bool rotateAsked = false;
+  ft_glm::vec3 rotateVec = ft_glm::vec3(0.0f, 0.0f, 0.0f);
+
+    // Moving Y axis (+)
+  if ((glfwGetKey( m_window, GLFW_KEY_UP )  == GLFW_PRESS 
+    || glfwGetKey( m_window, GLFW_KEY_W ) == GLFW_PRESS ) && isAltPressed()) {
+    rotateVec.y = +1.0f;
+    rotateAsked = true;
+  }
+  // Moving Y axis (-)
+  if ((glfwGetKey( m_window, GLFW_KEY_DOWN) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_S ) == GLFW_PRESS ) && isAltPressed()) {
+    rotateVec.y = -1.0f;
+    rotateAsked = true;
+  }
+
+  // Moving X axis (+)
+  if ((glfwGetKey( m_window, GLFW_KEY_RIGHT ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_D ) == GLFW_PRESS) && isAltPressed()) {
+    rotateVec.x = +1.0f;
+    rotateAsked = true;
+  }
+
+  // Moving X axis (-)
+  if ((glfwGetKey( m_window, GLFW_KEY_LEFT ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_A ) == GLFW_PRESS) && isAltPressed()) {
+    rotateVec.x = -1.0f;
+    rotateAsked = true;
+  }
+
+  // Moving Z axis (+)
+  if ((glfwGetKey( m_window, GLFW_KEY_PAGE_UP ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_C ) == GLFW_PRESS) && isAltPressed()) {
+    rotateVec.z = +1.0f;
+    rotateAsked = true;
+  }
+
+  // Moving Z axis (-)
+  if ((glfwGetKey( m_window, GLFW_KEY_PAGE_DOWN ) == GLFW_PRESS
+    || glfwGetKey( m_window, GLFW_KEY_V ) == GLFW_PRESS) && isAltPressed()) {
+    rotateVec.z = -1.0f;
+    rotateAsked = true;
+  }
+
+  if (rotateAsked) {
+    rotateModelWithVec3(rotateVec);
+  }
+}
+
+void Camera::autoRotate() {
+  ft_glm::vec3 rotateVec = ft_glm::vec3(0.0f, 1.0f, 0.0f);
+
+  if (m_autoRotate) {
+    rotateModelWithVec3(rotateVec);
+  }
+}
+
+
+void Camera::selectRotationSpeedFromInputs() {
+  static float speeds[10] = {0.1f, 0.5f, 1.0f, 2.0f, 3.0f, 5.0f, 8.0f, 12.0f, 28.0f, 50.0f};
+
+  if (glfwGetKey( m_window, GLFW_KEY_KP_0 )  == GLFW_PRESS)
+    m_rotationRate = speeds[0];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_1 )  == GLFW_PRESS)
+    m_rotationRate = speeds[1];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_2 )  == GLFW_PRESS)
+    m_rotationRate = speeds[2];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_3 )  == GLFW_PRESS)
+    m_rotationRate = speeds[3];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_4 )  == GLFW_PRESS)
+    m_rotationRate = speeds[4];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_5 )  == GLFW_PRESS)
+    m_rotationRate = speeds[5];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_6 )  == GLFW_PRESS)
+    m_rotationRate = speeds[6];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_7 )  == GLFW_PRESS)
+    m_rotationRate = speeds[7];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_8 )  == GLFW_PRESS)
+    m_rotationRate = speeds[8];
+  else if (glfwGetKey( m_window, GLFW_KEY_KP_9 )  == GLFW_PRESS)
+    m_rotationRate = speeds[9];
+}
+
+
+void Camera::switchAutoRotatefrominputs() {
+  if (glfwGetKey( m_window, GLFW_KEY_SPACE ) == GLFW_PRESS) {
+    float current = glfwGetTime();
+    float elapsed = current - m_lastRotateSwitchTime;
+
+    if (elapsed >= 0.5f) {
+      m_autoRotate = !m_autoRotate;
+      std::cout << "Rotate AUTO switch to " << (m_autoRotate ? "ON" : "OFF") << std::endl;
+      m_lastRotateSwitchTime = current;
+    }
+  }
+}
 
 void Camera::enableZoom() {
   static float cameraDistance = 10.0f;
@@ -111,93 +232,10 @@ void Camera::enableZoom() {
   if (glfwGetKey( m_window, GLFW_KEY_R ) == GLFW_PRESS) {
     cameraDistance = 10.0f;
     cameraHeight = 3.0f;
+    m_rotationRate = 2.0f;
+    m_modelMatrix = ft_glm::translate(ft_glm::mat4(1.0f), -modelCenter);
   }
 
   // Camera matrix
   m_viewMatrix  = ft_glm::lookAt(position, direction, up);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* -----------------------------------  [!] -------------------------------- */
-
-void Camera::computeMatricesFromInputs() {
-  static double lastTime = glfwGetTime(); // static to get initialized only once, at first call
-
-  // Compute time difference between current and last frame
-  double currentTime = glfwGetTime();
-  float deltaTime = float(currentTime - lastTime);
-
-  // Get mouse position
-  double xpos, ypos;
-  glfwGetCursorPos(m_window, &xpos, &ypos);
-
-  // Reset mouse position for next frame
-  glfwSetCursorPos(m_window, WIN_WIDTH / 2, WIN_HEIGHT / 2);
-
-  // Compute new orientation
-  m_horizontalAngle += m_mouseSpeed * float(WIN_WIDTH / 2 - xpos );
-  m_verticalAngle   += m_mouseSpeed * float(WIN_HEIGHT / 2 - ypos );
-
-  // Direction : Spherical coordinates to Cartesian coordinates conversion
-  ft_glm::vec3 direction(
-    cos(m_verticalAngle) * sin(m_horizontalAngle), 
-    sin(m_verticalAngle),
-    cos(m_verticalAngle) * cos(m_horizontalAngle)
-  );
-  
-  // Right vector
-  ft_glm::vec3 right = ft_glm::vec3(
-    sin(m_horizontalAngle - 3.14f/2.0f), 
-    0,
-    cos(m_horizontalAngle - 3.14f/2.0f)
-  );
-  
-  // Up vector
-  ft_glm::vec3 up = ft_glm::cross( right, direction );
-
-  //Move forward
-  if (glfwGetKey( m_window, GLFW_KEY_UP )  == GLFW_PRESS 
-    || glfwGetKey( m_window, GLFW_KEY_W ) == GLFW_PRESS ) {
-    m_position += direction * deltaTime * m_speed;
-  }
-  // Move backward
-  if (glfwGetKey( m_window, GLFW_KEY_DOWN) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_S ) == GLFW_PRESS ) {
-    m_position -= direction * deltaTime * m_speed;
-  }
-  // Strafe right
-  if (glfwGetKey( m_window, GLFW_KEY_RIGHT ) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_D ) == GLFW_PRESS) {
-    m_position += right * deltaTime * m_speed;
-  }
-  // Strafe left
-  if (glfwGetKey( m_window, GLFW_KEY_LEFT ) == GLFW_PRESS
-    || glfwGetKey( m_window, GLFW_KEY_A ) == GLFW_PRESS) {
-    m_position -= right * deltaTime * m_speed;
-  }
-
-  float FoV = m_initialFoV;
-
-  // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-  m_projectionMatrix = ft_glm::perspective(ft_glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
-  // Camera matrix
-  m_viewMatrix  = ft_glm::lookAt(
-    m_position,              // Camera is here
-    m_position + direction,  // and looks here : at the same position, plus "direction"
-    up                       // Head is up (set to 0,-1,0 to look upside-down)
-  );
-
-  lastTime = currentTime;
 }

@@ -15,8 +15,8 @@ bool compareMatrices(const ft_glm::mat4 &ft_m, const glm::mat4 &m) {
   bool isFailed = false;
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
-      if (ft_m[i][j] != m[i][j]) {
-        std::cout << "ft_m[" << i << "][" << j << "] = " << ft_m[i][j] << " != m[" << i << "][" << j << "] = " << m[i][j] << std::endl;
+      if (ft_m[i *4 + j] != m[i][j]) {
+        std::cout << "ft_m[" << i << "][" << j << "] = " << ft_m[i * 4 + j] << " != m[" << i << "][" << j << "] = " << m[i][j] << std::endl;
         isFailed = true;
       }
     }
