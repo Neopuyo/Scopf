@@ -32,6 +32,7 @@ class Camera {
     // Model Rotation
     bool m_autoRotate = true;
     float m_lastRotateSwitchTime = 0.0f;
+    float m_lastWireframeSwitchTime = 0.0f;
     float m_rotationRate = 2.0f;
 
     // Model Tranlsation
@@ -57,7 +58,8 @@ class Camera {
     void moveModelFromInputs();
     void rotateModelFromInputs();
     void selectRotationSpeedFromInputs();
-    void switchAutoRotatefrominputs();
+    void switchAutoRotateFromInputs();
+    void switchWireframeFromInputs();
     void enableZoom();
     void autoRotate();
     void translateModelToCenter();

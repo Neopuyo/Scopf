@@ -105,8 +105,9 @@ int main(int ac, char **av)
     camera.rotateModelFromInputs();
     camera.autoRotate();
     camera.moveModelFromInputs();
-    camera.switchAutoRotatefrominputs();
     camera.selectRotationSpeedFromInputs();
+    camera.switchAutoRotateFromInputs();
+    camera.switchWireframeFromInputs();
 
     shader.setUniformMat4f("u_mvp", camera.computeMVP());
     shader.setUniform1i("u_viewMode", camera.getViewMode());

@@ -191,15 +191,31 @@ void Camera::selectRotationSpeedFromInputs() {
 }
 
 
-void Camera::switchAutoRotatefrominputs() {
+void Camera::switchAutoRotateFromInputs() {
   if (glfwGetKey( m_window, GLFW_KEY_SPACE ) == GLFW_PRESS) {
     float current = glfwGetTime();
     float elapsed = current - m_lastRotateSwitchTime;
 
     if (elapsed >= 0.5f) {
       m_autoRotate = !m_autoRotate;
-      std::cout << "Rotate AUTO switch to " << (m_autoRotate ? "ON" : "OFF") << std::endl;
       m_lastRotateSwitchTime = current;
+    }
+  }
+}
+
+void Camera::switchWireframeFromInputs() {
+  if (glfwGetKey( m_window, GLFW_KEY_KP_DIVIDE) == GLFW_PRESS 
+  || glfwGetKey( m_window, GLFW_KEY_KP_MULTIPLY) == GLFW_PRESS) {
+    float current = glfwGetTime();
+    float elapsed = current - m_lastWireframeSwitchTime;
+
+    if (elapsed >= 0.5f) {
+      if (glfwGetKey( m_window, GLFW_KEY_KP_DIVIDE) == GLFW_PRESS) {
+        LOGCHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+      } else {
+        LOGCHECK(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+      }
+      m_lastWireframeSwitchTime = current;
     }
   }
 }
