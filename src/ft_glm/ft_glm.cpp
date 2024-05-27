@@ -54,7 +54,6 @@ vec3 ft_glm::operator*(const vec3& v1, const vec3& v2) {
 }
 
 float &ft_glm::vec3::operator[](int index) {
-  static float invalid_value = 0.0f;
   switch (index) {
     case 0: return x;
     case 1: return y;
@@ -64,7 +63,6 @@ float &ft_glm::vec3::operator[](int index) {
 }
 
 const float &ft_glm::vec3::operator[](int index) const {
-  static float invalid_value = 0.0f;
   switch (index) {
     case 0: return x;
     case 1: return y;
@@ -300,6 +298,7 @@ ft_glm::mat4 ft_glm::rotate(mat4 const &m, float const &angle, vec3 const &v) {
   float const c = cos(a);
   float const s = sin(a);
 
+
   vec3 axis(normalize(v));
   vec3 temp((1.0f - c) * axis);
 
@@ -318,6 +317,7 @@ ft_glm::mat4 ft_glm::rotate(mat4 const &m, float const &angle, vec3 const &v) {
 
   mat4 rotationMatrix;
 
+  (void)m;
   // rotationMatrix[0] = m[0] * rotate[0][0];
 
   // for (int i = 0; i < 4; i++) {
